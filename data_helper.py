@@ -9,7 +9,7 @@ def get_train_dataloader(args,txt_file):
 
     img_transformer = get_train_transformers(args)
     name_train, labels_train = _dataset_info(txt_file)
-    train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer)
+    train_dataset = Dataset(name_train, labels_train, args.image_size, args.jigsaw_dimension, args.path_dataset, img_transformer=img_transformer)
     loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
 
     return loader

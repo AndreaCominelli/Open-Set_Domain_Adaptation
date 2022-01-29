@@ -1,5 +1,6 @@
 import argparse
 import os
+import math
 
 import torch
 
@@ -44,8 +45,14 @@ def get_args():
     parser.add_argument("--train_all", type=bool, default=True, help="If true, all network weights will be trained")
 
     parser.add_argument("--weight_RotTask_step1", type=float, default=0.5, help="Weight for the rotation loss in step1")
+    parser.add_argument("--weight_FlipTask_step1", type=float, default=0.5, help="Weight for the flip loss in step1")
+    parser.add_argument("--weight_JigsawTask_step1", type=float, default=0.5, help="Weight for the jigsaw loss in step1")
     parser.add_argument("--weight_RotTask_step2", type=float, default=0.5, help="Weight for the rotation loss in step2")
+    parser.add_argument("--weight_FlipTask_step2", type=float, default=0.5, help="Weight for the flip loss in step2")
+    parser.add_argument("--weight_JigsawTask_step2", type=float, default=0.5, help="Weight for the jigsaw loss in step2")
     parser.add_argument("--threshold", type=float, default=0.5, help="Threshold for the known/unkown separation")
+
+    parser.add_argument("--jigsaw_dimension", type=tuple, default=(3,2), help="(horizontal_blocks, vertical_blocks)")
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
@@ -58,20 +65,26 @@ class Trainer:
     def __init__(self, args):
         self.args = args
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+        #self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
+        
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor()
         self.obj_classifier = Classifier(512,self.args.n_classes_known+1)
         self.rot_classifier = Classifier(512*2,4)
+        ### flip classifier
+        self.flip_classifier = Classifier(512*2,2)
+        ### jigsaw classifier 3x3-permutation
+        self.jigsaw_classifier = Classifier(512*2,math.factorial(9))
 
         self.feature_extractor = self.feature_extractor.to(self.device)
         self.obj_cls = self.obj_classifier.to(self.device)
         self.rot_cls = self.rot_classifier.to(self.device)
+        self.flip_cls = self.flip_classifier.to(self.device)
+        self.jigsaw_cls = self.flip_classifier.to(self.device)
 
         source_path_file = 'txt_list/'+args.source+'_known.txt'
         self.source_loader = data_helper.get_train_dataloader(args,source_path_file)
-        
         
         target_path_file = 'txt_list/' + args.target + '.txt'
         self.target_loader_train = data_helper.get_val_dataloader(args,target_path_file)
@@ -86,7 +99,7 @@ class Trainer:
 
         if not os.path.isfile("./feature_extractor_params.pt") and not os.path.isfile("./rot_cls_params.pt"):
             print('Step 1 --------------------------------------------')
-            step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
+            step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls, self.flip_cls, self.jigsaw_cls, self.source_loader,self.device)
 
         print('Target - Evaluation -- for known/unknown separation')
 
