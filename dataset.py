@@ -4,9 +4,12 @@ from PIL import Image
 from itertools import permutations
 import random
 import math
+import matplotlib
+matplotlib.use('TkAgg', force=True)
 import matplotlib.pyplot as plt
 import numpy as npy
 from torchvision import transforms
+import torch
 
 def _dataset_info(txt_labels):
     with open(txt_labels, 'r') as f:
@@ -55,61 +58,57 @@ def flip_2_times(img):
 
 ### what about inserting factorial number into the args??
 ### verify that the image from torch computation is compatible with pillow format....
-def random_jigsaw(img, img_size, dim):
-    size = int(dim[0]*dim[1])
+def random_jigsaw(img, img_size, jigsaw_dim):
+    size = int(jigsaw_dim[0]*jigsaw_dim[1])
     jigsaw_index = random.randint(0,math.factorial(size))
 
     #img_size must be a multiple of both dim[0] and dim[1]
-    (width, height) = (int(img_size / dim[0]), int(img_size / dim[1]))
+    (width, height) = (int(img_size / jigsaw_dim[0]), int(img_size / jigsaw_dim[1]))
 
     pieces = []
     for i in range(size):
-        left = (width*i) % (width*dim[0])
-        right = left + width
-        top = height*(int(i/dim[0]))
-        bottom = top + height
-        pieces.append(img.crop((left, top, right, bottom)))
+        left = (width*i) % (width*jigsaw_dim[0])
+        top = height*(int(i/jigsaw_dim[0]))
+        pieces.append(transforms.functional.crop(img, top, left, height, width))
 
     perm = list(permutations(range(size)))
 
-    img = Image.new("RGB", (width*dim[0],height*dim[1]))
+    img = torch.empty(0)
 
-    for i in range(size):
-        left = (width*i) % (width*dim[0])
-        top = height*(int(i/dim[0]))
-        img.paste(pieces[perm[jigsaw_index][i]], (left, top))
+    for i in range(jigsaw_dim[1]):
+        img_row = torch.empty(0)
+        for j in range(jigsaw_dim[0]):
+            img_row = torch.cat((img_row, pieces[perm[jigsaw_index][i*jigsaw_dim[0]+j]]), dim=2)
+        img = torch.cat((img, img_row), dim=1)
 
     return img, jigsaw_index
 
-def some_jigsaw(img, img_size, dim):
-    size = int(dim[0]*dim[1])
+def some_jigsaw(img, img_size, jigsaw_dim, nbr_imgs):
+    size = int(jigsaw_dim[0]*jigsaw_dim[1])
 
     #img_size must be a multiple of both dim[0] and dim[1]
-    (width, height) = (int(img_size / dim[0]), int(img_size / dim[1]))
+    (width, height) = (int(img_size / jigsaw_dim[0]), int(img_size / jigsaw_dim[1]))
 
     pieces = []
     for i in range(size):
-        left = (width*i) % (width*dim[0])
-        right = left + width
-        top = height*(int(i/dim[0]))
-        bottom = top + height
-        pieces.append(img.crop((left, top, right, bottom)))
+        left = (width*i) % (width*jigsaw_dim[0])
+        top = height*(int(i/jigsaw_dim[0]))
+        pieces.append(transforms.functional.crop(img, top, left, height, width))
 
     perm = list(permutations(range(size)))
 
-    img = Image.new("RGB", (width*dim[0],height*dim[1]))
-
-    ### DECIDE WHAT TO DO, IF RETURN 720 IMAGES (CRAZY) OR IF RETURN SOME IMAGES IN THE MIDDLE LIKE NOW...................!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     to_return = []
-    split = 4
-    step = len(perm) / 6
-    for i in range(4):
-        for i in range(size):
-            left = (width*i) % (width*dim[0])
-            top = height*(int(i/dim[0]))
-            img.paste(pieces[perm[step*i+step][i]], (left, top))
+    step = len(perm) / (nbr_imgs+1)
+    for n in range(nbr_imgs):
+        img = torch.empty(0)
+        for i in range(jigsaw_dim[1]):
+            img_row = torch.empty(0)
+            for j in range(jigsaw_dim[0]):
+                img_row = torch.cat((img_row, pieces[perm[step*n+step][i*jigsaw_dim[0]+j]]), dim=2)
+            img = torch.cat((img, img_row), dim=1)
+        to_return.append(img)
 
-    return to_return[0], to_return[1], to_return[2], to_return[3]
+    return to_return
 
 class Dataset(data.Dataset):
     def __init__(self, names, labels, img_size, jigsaw_dim, path_dataset,img_transformer=None):
@@ -157,13 +156,13 @@ class TestDataset(data.Dataset):
             _, img_90, img_180, img_270 = rotate_4_times(img)
             ###
             _, flipped = flip_2_times(img)
-            jig0, jig1, jig2, jig3 = some_jigsaw(img, self.img_size, self.jigsaw_dim)
+            jig = some_jigsaw(img, self.img_size, self.jigsaw_dim)
         
-        return img, int(self.labels[index]), img_90, img_180, img_270, flipped, jig0, jig1, jig2, jig3, img_path
+        return img, int(self.labels[index]), img_90, img_180, img_270, flipped, jig[0], jig[1], jig[2], jig[3], img_path
 
     def __len__(self):
         return len(self.names)
-
+'''
 def imshow(img, lbl):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
@@ -180,8 +179,13 @@ if __name__ == "__main__":
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
 
-    source_ds = Dataset(names=names,labels=lbls,path_dataset="./data",img_transformer=transform)
+    source_ds = Dataset(names=names,labels=lbls, img_size=222, jigsaw_dim=(3,2), path_dataset="./data",img_transformer=transform)
 
-    img, index_img, img_rot, index_rot = source_ds[0]
-    imshow(img, index_img)
-    imshow(img_rot, index_rot)
+    img, index_img, img_rot, index_rot, flip_img, flip_labl, jigsaw_img, jigsaw_labl = source_ds[0]
+    #imshow(img, index_img)
+    #imshow(img_rot, index_rot)
+    #imshow(flip_img, flip_labl)
+    print(jigsaw_img.shape)
+    #imshow(jigsaw_img, jigsaw_labl)
+
+    '''

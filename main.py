@@ -75,7 +75,7 @@ class Trainer:
         ### flip classifier
         self.flip_classifier = Classifier(512*2,2)
         ### jigsaw classifier 3x3-permutation
-        self.jigsaw_classifier = Classifier(512*2,math.factorial(9))
+        self.jigsaw_classifier = Classifier(512*2,math.factorial(args.jigsaw_dimension[0]*args.jigsaw_dimension[1]))
 
         self.feature_extractor = self.feature_extractor.to(self.device)
         self.obj_cls = self.obj_classifier.to(self.device)

@@ -71,6 +71,8 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
     feature_extractor.train()
     obj_cls.train()
     rot_cls.train()
+    flip_cls.train()
+    jigsaw_cls.train()
     
     running_img_corrects = 0
     running_rot_corrects = 0
@@ -110,6 +112,8 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         img_loss = criterion(imgs_predictions, lbls)
         rot_loss = criterion(rot_predictions, rot_lbls)
         flip_loss = criterion(flip_prediction, flip_labl)
+        print(flip_prediction.shape, flip_labl.shape)
+        print(jigsaw_prediction.shape, jigsaw_labl.shape)
         jigsaw_loss = criterion(jigsaw_prediction, jigsaw_labl)
 
         loss = img_loss + args.weight_RotTask_step1*rot_loss + args.weight_FlipTask_step1*flip_loss + args.weight_JigsawTask_step1*jigsaw_loss
@@ -138,7 +142,7 @@ def step1(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_l
 
     for epoch in range(args.epochs_step1):
         print('Epoch: ',epoch)
-        class_loss, acc_cls, rot_loss, acc_rot, flip_loss, flip_acc, jigsaw_loss, jigsaw_acc = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device,criterion)
+        class_loss, acc_cls, rot_loss, acc_rot, flip_loss, flip_acc, jigsaw_loss, jigsaw_acc = _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_loader,optimizer,device,criterion)
         print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f, Flip Loss %.4f, Flip Accuracy %.4f, Jigsaw Loss %.4f, Jigsaw Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot, flip_loss.item(), flip_acc, jigsaw_loss.item(), jigsaw_acc))
         scheduler.step()
     
