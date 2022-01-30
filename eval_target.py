@@ -1,4 +1,5 @@
 
+from importlib.abc import SourceLoader
 from matplotlib import image
 import torch
 import numpy as np
@@ -22,7 +23,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
         for it, (img ,class_l, img_90, img_180, img_270, img_path) in tqdm(enumerate(target_loader_eval)):
             img ,class_l, img_90, img_180, img_270 = img.to(device), class_l.to(device), img_90.to(device), img_180.to(device), img_270.to(device)
             
-            if class_l > args.n_classes_known:
+            if class_l >= args.n_classes_known:
                 ground_truth.append(0)
             else:
                 ground_truth.append(1)
@@ -47,9 +48,9 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             normality_scores.append(normality_score)
 
             if normality_score > args.threshold:
-                known_samples.append(img_path)
+                known_samples.append((img_path,class_l))
             else:
-                unknown_samples.append(img_path)
+                unknown_samples.append((img_path,args.n_classes_known))
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('AUROC %.4f' % auroc)
@@ -64,12 +65,16 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     # This txt files will have the names of the target images selected as known
     target_known = open('new_txt_list/' + args.target + '_known_' + str(rand) + '.txt','a')
 
+    source_path = 'txt_list/'+args.source+'_known.txt'
+    with open(source_path,'r') as f:
+        target_unknown.write(f.read())
+
     for path in known_samples:
-        target_known.write(path[0])
+        target_known.write((path[0][0]+" "+str(int(path[1])))+"\n")
     target_known.close()
 
     for path in unknown_samples:
-        target_unknown.write(path[0])
+        target_unknown.write((path[0][0]+" "+str(int(path[1])))+"\n")
     target_unknown.close()
 
     number_of_known_samples = len(known_samples)

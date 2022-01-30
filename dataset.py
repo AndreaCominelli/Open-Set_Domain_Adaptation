@@ -81,7 +81,7 @@ class TestDataset(data.Dataset):
             img = self._image_transformer(img)
             _, img_90, img_180, img_270 = rotate_4_times(img)
         
-        return img, int(self.labels[index]), img_90, img_180, img_270, img_path
+        return img, int(self.labels[index]), img_90, img_180, img_270, img_name
 
     def __len__(self):
         return len(self.names)

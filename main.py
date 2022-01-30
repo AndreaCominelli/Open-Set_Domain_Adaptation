@@ -1,8 +1,9 @@
 import argparse
 import os
-
+import datetime
 import torch
-
+from Logger import Logger
+import sys
 import data_helper
 from resnet import resnet18_feat_extractor, Classifier
 
@@ -12,7 +13,7 @@ import numpy as npy
 
 from torch.utils.data.sampler import SubsetRandomSampler
 
-# from step2_SourceTargetAdapt import step2
+from step2_SourceTargetAdapt import step2
 
 
 def get_args():
@@ -49,7 +50,7 @@ def get_args():
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
-    parser.add_argument("--folder_name", default=None, help="Used by the logger to save logs")
+    parser.add_argument("--folder_name", default="./logs", help="Used by the logger to save logs")
 
     return parser.parse_args()
 
@@ -105,11 +106,16 @@ class Trainer:
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file)
         self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file)
 
-        """print('Step 2 --------------------------------------------')
-        step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)"""
+
+
+        print('Step 2 --------------------------------------------')
+        step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)
 
 def main():
     args = get_args()
+    current_time = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
+    sys.stdout = Logger(args.folder_name+'/'+current_time+'.log',sys.stdout)
+    sys.stderr = Logger(args.folder_name+'/'+current_time+'.log',sys.stderr)
     trainer = Trainer(args)
     trainer.do_training()
 
