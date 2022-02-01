@@ -116,6 +116,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         print(jigsaw_prediction.shape, jigsaw_labl.shape)
         jigsaw_loss = criterion(jigsaw_prediction, jigsaw_labl)
 
+
         loss = img_loss + args.weight_RotTask_step1*rot_loss + args.weight_FlipTask_step1*flip_loss + args.weight_JigsawTask_step1*jigsaw_loss
 
         # compute gradient + update params
