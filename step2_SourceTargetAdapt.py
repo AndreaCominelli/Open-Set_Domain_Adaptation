@@ -6,7 +6,6 @@ from itertools import cycle
 import numpy as np
 from tqdm import tqdm
 
-
 #### Implement Step2
 
 def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,target_loader_train,target_loader_eval,optimizer,device):

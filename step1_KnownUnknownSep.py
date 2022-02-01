@@ -6,66 +6,6 @@ from tqdm import tqdm
 
 #### Implement Step1
 
-"""def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,device,phase):
-    
-    if phase == "train":
-        print("TRAINING MODE")
-        feature_extractor.train()
-        obj_cls.train()
-        rot_cls.train()
-    else:
-        print("VALIDATION MODE")
-        feature_extractor.eval()
-        obj_cls.eval()
-        rot_cls.eval()
-
-    running_img_corrects = 0
-    running_rot_corrects = 0
-
-    for i, (imgs, lbls, rot_imgs, rot_lbls) in tqdm(enumerate(dataloaders[phase])):
-        imgs = imgs.to(device)
-        lbls = lbls.to(device)
-        rot_imgs = rot_imgs.to(device)
-        rot_lbls = rot_lbls.to(device)
-
-        # forward
-        with torch.set_grad_enabled(phase == "train"):
-            imgs_out = feature_extractor(imgs)
-            imgs_predictions = obj_cls(imgs_out)
-            
-            rot_out = feature_extractor(rot_imgs)
-            rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
-            
-            _, imgs_preds = torch.max(imgs_predictions, 1)
-            _, rot_preds = torch.max(rot_predictions, 1)
-
-            # compute loss
-
-            img_loss = nn.CrossEntropyLoss(imgs_predictions, lbls)
-            rot_loss = nn.CrossEntropyLoss(rot_predictions, rot_lbls)
-
-            loss = img_loss + args.weight_RotTask_step1*rot_loss
-
-            if phase == "train":
-                    # compute gradient + update params
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-            # statistics
-            # raccolgo in ciascun batch la loss per quel batch e quanti elementi sono stati
-            # classificati correttamente
-
-        #running_loss += loss.item() * imgs.size(0)
-        running_img_corrects += torch.sum(imgs_preds == lbls.data)
-        running_rot_corrects += torch.sum(rot_preds == rot_lbls.data)
-
-    #class_loss = running_loss / dataset_sizes[phase]
-    img_acc = (running_img_corrects.double() / len(dataloaders[phase].dataset)) * 100
-    rot_acc = (running_rot_corrects.double() / len(dataloaders[phase].dataset)) * 100
-
-    return img_loss, img_acc, rot_loss, rot_acc"""
-
 def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device,criterion):
     
     feature_extractor.train()
