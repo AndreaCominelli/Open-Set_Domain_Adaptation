@@ -60,7 +60,7 @@ def flip_2_times(img):
 ### verify that the image from torch computation is compatible with pillow format....
 def random_jigsaw(img, img_size, jigsaw_dim):
     size = int(jigsaw_dim[0]*jigsaw_dim[1])
-    jigsaw_index = random.randint(0,math.factorial(size))
+    jigsaw_index = random.randint(0,math.factorial(size)-1)
 
     #img_size must be a multiple of both dim[0] and dim[1]
     (width, height) = (int(img_size / jigsaw_dim[0]), int(img_size / jigsaw_dim[1]))
@@ -162,7 +162,7 @@ class TestDataset(data.Dataset):
 
     def __len__(self):
         return len(self.names)
-'''
+
 def imshow(img, lbl):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
@@ -186,6 +186,4 @@ if __name__ == "__main__":
     #imshow(img_rot, index_rot)
     #imshow(flip_img, flip_labl)
     print(jigsaw_img.shape)
-    #imshow(jigsaw_img, jigsaw_labl)
-
-    '''
+    imshow(jigsaw_img, jigsaw_labl)

@@ -65,8 +65,8 @@ class Trainer:
     def __init__(self, args):
         self.args = args
 
-        #self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.device = torch.device("cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #self.device = torch.device("cpu")
         
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor()
@@ -75,13 +75,14 @@ class Trainer:
         ### flip classifier
         self.flip_classifier = Classifier(512*2,2)
         ### jigsaw classifier 3x3-permutation
+        print(math.factorial(args.jigsaw_dimension[0]*args.jigsaw_dimension[1]))
         self.jigsaw_classifier = Classifier(512*2,math.factorial(args.jigsaw_dimension[0]*args.jigsaw_dimension[1]))
 
         self.feature_extractor = self.feature_extractor.to(self.device)
         self.obj_cls = self.obj_classifier.to(self.device)
         self.rot_cls = self.rot_classifier.to(self.device)
         self.flip_cls = self.flip_classifier.to(self.device)
-        self.jigsaw_cls = self.flip_classifier.to(self.device)
+        self.jigsaw_cls = self.jigsaw_classifier.to(self.device)
 
         source_path_file = 'txt_list/'+args.source+'_known.txt'
         self.source_loader = data_helper.get_train_dataloader(args,source_path_file)
@@ -105,10 +106,12 @@ class Trainer:
 
         # if params are already computed, load the model and procede with its evaluation
 
-        self.rot_cls.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
-        self.feature_extractor.load_state_dict(torch.load("./rot_cls_params.pt"), strict=False)
+        self.feature_extractor.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
+        self.rot_cls.load_state_dict(torch.load("./rot_cls_params.pt"), strict=False)
+        self.flip_cls.load_state_dict(torch.load("./flip_cls_params.pt"), strict=False)
+        self.jigsaw_cls.load_state_dict(torch.load("./jigsaw_cls_params.pt"), strict=False)
 
-        rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
+        rand = evaluation(self.args,self.feature_extractor,self.rot_cls, self.flip_cls, self.jigsaw_cls, self.target_loader_eval,self.device)
 
         # new dataloaders
         source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'

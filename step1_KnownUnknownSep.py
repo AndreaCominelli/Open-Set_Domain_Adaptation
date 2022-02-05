@@ -116,7 +116,6 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         print(jigsaw_prediction.shape, jigsaw_labl.shape)
         jigsaw_loss = criterion(jigsaw_prediction, jigsaw_labl)
 
-
         loss = img_loss + args.weight_RotTask_step1*rot_loss + args.weight_FlipTask_step1*flip_loss + args.weight_JigsawTask_step1*jigsaw_loss
 
         # compute gradient + update params
@@ -128,7 +127,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         running_img_corrects += torch.sum(imgs_preds == lbls.data)
         running_rot_corrects += torch.sum(rot_preds == rot_lbls.data)
         running_flip_corrects += torch.sum(flip_pred == flip_labl.data)
-        running_jigsaw_corrects += torch.summ(jigsaw_pred == jigsaw_labl.data)
+        running_jigsaw_corrects += torch.sum(jigsaw_pred == jigsaw_labl.data)
 
     img_acc = (running_img_corrects.double() / len(source_loader.dataset)) * 100
     rot_acc = (running_rot_corrects.double() / len(source_loader.dataset)) * 100
@@ -148,7 +147,7 @@ def step1(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_l
         scheduler.step()
     
     torch.save(feature_extractor.state_dict(), "./feature_extractor_params.pt")
-    torch.save(rot_cls.state_dict(), "./rot_cls_params.pt")
     torch.save(obj_cls.state_dict(), "./obj_cls_params.pt")
+    torch.save(rot_cls.state_dict(), "./rot_cls_params.pt")
     torch.save(flip_cls.state_dict(), "./flip_cls_params.pt")
     torch.save(jigsaw_cls.state_dict(), "./jigsaw_cls_params.pt")
