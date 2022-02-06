@@ -162,6 +162,10 @@ class TestDataset(data.Dataset):
 
     def __len__(self):
         return len(self.names)
+
+#  should we need to add the methods of Dataset and TestData for var1 ?
+
+
 '''
 def imshow(img, lbl):
     img = img / 2 + 0.5     # unnormalize
