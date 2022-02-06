@@ -9,8 +9,12 @@ def get_train_dataloader(args,txt_file):
 
     img_transformer = get_train_transformers(args)
     name_train, labels_train = _dataset_info(txt_file)
-    train_dataset = Dataset(name_train, labels_train, args.image_size, args.jigsaw_dimension, args.path_dataset, img_transformer=img_transformer)
-    loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
+    if args.ros_version == 'ROS' or args.ros_version == 'variation2':
+        train_dataset = Dataset(name_train, labels_train, args.path_dataset, img_transformer=img_transformer)
+    ##    
+    elif args.ros_version == 'variation1':
+        train_dataset = Dataset(name_train, labels_train, args.image_size, args.jigsaw_dimension, args.path_dataset, img_transformer=img_transformer)
+    loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=0, pin_memory=True, drop_last=True)
 
     return loader
 
@@ -19,8 +23,12 @@ def get_val_dataloader(args,txt_file):
 
     names, labels = _dataset_info(txt_file)
     img_tr = get_test_transformer(args)
-    test_dataset = TestDataset(names, labels, args.image_size, args.jigsaw_dimension, args.path_dataset, img_transformer=img_tr)
-    loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=4, pin_memory=True, drop_last=False)
+    if args.ros_version == 'ROS' or args.ros_version == 'variation2':
+        test_dataset = TestDataset(names, labels, args.path_dataset, img_transformer=img_tr)
+    ##
+    elif args.ros_version == 'variation1':
+        test_dataset = TestDataset(names, labels, args.image_size, args.jigsaw_dimension, args.path_dataset, img_transformer=img_tr)
+    loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, pin_memory=True, drop_last=False)
 
     return loader
 

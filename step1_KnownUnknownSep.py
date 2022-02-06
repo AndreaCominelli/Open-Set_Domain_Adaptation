@@ -5,74 +5,17 @@ from optimizer_helper import get_optim_and_scheduler
 from tqdm import tqdm
 
 #### Implement Step1
-
-"""def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,device,phase):
-    
-    if phase == "train":
-        print("TRAINING MODE")
-        feature_extractor.train()
-        obj_cls.train()
-        rot_cls.train()
-    else:
-        print("VALIDATION MODE")
-        feature_extractor.eval()
-        obj_cls.eval()
-        rot_cls.eval()
-
-    running_img_corrects = 0
-    running_rot_corrects = 0
-
-    for i, (imgs, lbls, rot_imgs, rot_lbls) in tqdm(enumerate(dataloaders[phase])):
-        imgs = imgs.to(device)
-        lbls = lbls.to(device)
-        rot_imgs = rot_imgs.to(device)
-        rot_lbls = rot_lbls.to(device)
-
-        # forward
-        with torch.set_grad_enabled(phase == "train"):
-            imgs_out = feature_extractor(imgs)
-            imgs_predictions = obj_cls(imgs_out)
-            
-            rot_out = feature_extractor(rot_imgs)
-            rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
-            
-            _, imgs_preds = torch.max(imgs_predictions, 1)
-            _, rot_preds = torch.max(rot_predictions, 1)
-
-            # compute loss
-
-            img_loss = nn.CrossEntropyLoss(imgs_predictions, lbls)
-            rot_loss = nn.CrossEntropyLoss(rot_predictions, rot_lbls)
-
-            loss = img_loss + args.weight_RotTask_step1*rot_loss
-
-            if phase == "train":
-                    # compute gradient + update params
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-            # statistics
-            # raccolgo in ciascun batch la loss per quel batch e quanti elementi sono stati
-            # classificati correttamente
-
-        #running_loss += loss.item() * imgs.size(0)
-        running_img_corrects += torch.sum(imgs_preds == lbls.data)
-        running_rot_corrects += torch.sum(rot_preds == rot_lbls.data)
-
-    #class_loss = running_loss / dataset_sizes[phase]
-    img_acc = (running_img_corrects.double() / len(dataloaders[phase].dataset)) * 100
-    rot_acc = (running_rot_corrects.double() / len(dataloaders[phase].dataset)) * 100
-
-    return img_loss, img_acc, rot_loss, rot_acc"""
-
 def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_loader,optimizer,device,criterion):
     
     feature_extractor.train()
     obj_cls.train()
-    rot_cls.train()
-    flip_cls.train()
-    jigsaw_cls.train()
+    if args.ros_version == 'variation2':
+        for rot_cls_i in rot_cls:
+            rot_cls_i.train()
+    else:        
+        rot_cls.train()
+        flip_cls.train()
+        jigsaw_cls.train()
     
     running_img_corrects = 0
     running_rot_corrects = 0
@@ -94,6 +37,31 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         imgs_predictions = obj_cls(imgs_out)
 
         rot_out = feature_extractor(rot_imgs)
+        ##flip
+        flip_out = feature_extractor(flip_img)
+        jigsaw_out = feature_extractor(jigsaw_img)
+        if args.ros_version == 'variation2':
+            rot_loss = 0
+            # 对于每张图片，只训练该图片对应类别的旋转角度分类器
+            for index,class_l in enumerate(lbls.int()):
+                rot_predictions = torch.reshape(rot_cls[class_l](torch.cat((rot_out[index], imgs_out[index]), dim=0)),(1,4))
+                rot_loss += criterion(rot_predictions, torch.reshape(rot_lbls[index],(-1,)))
+                _, rot_preds = torch.max(rot_predictions, 1)
+                running_rot_corrects += torch.sum(rot_preds == rot_lbls[index])
+        else:
+            rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
+            _, rot_preds = torch.max(rot_predictions, 1)
+            rot_loss = criterion(rot_predictions, rot_lbls)
+            running_rot_corrects += torch.sum(rot_preds == rot_lbls.data)
+            ##
+            flip_prediction = flip_cls(torch.cat((flip_out, imgs_out), dim=1))
+            _, flip_pred = torch.max(flip_prediction, 1)
+            jigsaw_prediction = jigsaw_cls(torch.cat((jigsaw_out, imgs_out), dim=1))
+            _, jigsaw_pred = torch.max(jigsaw_prediction, 1)
+
+        _, imgs_preds = torch.max(imgs_predictions, 1)        
+
+        '''
         rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
 
         flip_out = feature_extractor(flip_img)
@@ -102,11 +70,13 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         jigsaw_out = feature_extractor(jigsaw_img)
         jigsaw_prediction = jigsaw_cls(torch.cat((jigsaw_out, imgs_out), dim=1))
 
+
+
         _, imgs_preds = torch.max(imgs_predictions, 1)
         _, rot_preds = torch.max(rot_predictions, 1)
         _, flip_pred = torch.max(flip_prediction, 1)
         _, jigsaw_pred = torch.max(jigsaw_prediction, 1)
-
+        '''
         # compute loss
 
         img_loss = criterion(imgs_predictions, lbls)
@@ -146,6 +116,11 @@ def step1(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_l
     
     torch.save(feature_extractor.state_dict(), "./feature_extractor_params.pt")
     torch.save(obj_cls.state_dict(), "./obj_cls_params.pt")
-    torch.save(rot_cls.state_dict(), "./rot_cls_params.pt")
-    torch.save(flip_cls.state_dict(), "./flip_cls_params.pt")
-    torch.save(jigsaw_cls.state_dict(), "./jigsaw_cls_params.pt")
+
+    if args.ros_version == 'variation2':
+        for i in range(args.n_classes_known):
+            torch.save(rot_cls[i].state_dict(), "./models/rot_cls_params_{}.pt".format(i))
+    else:
+        torch.save(rot_cls.state_dict(), "./models/rot_cls_params.pt")
+        torch.save(flip_cls.state_dict(), "./flip_cls_params.pt")
+        torch.save(jigsaw_cls.state_dict(), "./jigsaw_cls_params.pt")

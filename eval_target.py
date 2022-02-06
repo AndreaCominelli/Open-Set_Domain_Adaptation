@@ -1,20 +1,26 @@
-
 from matplotlib import image
 import torch
 import numpy as np
 from sklearn.metrics import roc_auc_score
 import random
 from tqdm import tqdm
-
+from torch import nn
 #### Implement the evaluation on the target for the known/unknown separation
 
 def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_loader_eval,device):
 
     feature_extractor.eval()
-    rot_cls.eval()
-    flip_cls.eval()
-    jigsaw_cls.eval()
+#jump to variation2 eval 
+    if args.ros_version == 'variation2':
+        for rot_cls_i in rot_cls:
+            rot_cls_i.eval()
+    else:
+        rot_cls.eval()
+        flip_cls.eval()
+        jigsaw_cls.eval()
     
+    softmax = nn.Softmax(dim=1)
+
     normality_scores = []
     ground_truth = []
     known_samples = []
@@ -26,7 +32,7 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
             img_90, img_180, img_270 = img_90.to(device), img_180.to(device), img_270.to(device)
             flipped, jig0, jig1, jig2, jig3 = flipped.to(device), jig0.to(device), jig1.to(device), jig2.to(device), jig3.to(device)
             
-            if class_l > args.n_classes_known:
+            if class_l >= args.n_classes_known:
                 ground_truth.append(0)
             else:
                 ground_truth.append(1)
@@ -42,10 +48,43 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
             jig2_out = feature_extractor(jig2)
             jig3_out = feature_extractor(jig3)
 
-            rot_predictions_0   = rot_cls(torch.cat((img_out, img_out), dim=1))
-            rot_predictions_90  = rot_cls(torch.cat((rot_out_90, img_out), dim=1))
-            rot_predictions_180 = rot_cls(torch.cat((rot_out_180, img_out), dim=1))
-            rot_predictions_270 = rot_cls(torch.cat((rot_out_270, img_out), dim=1))
+#choose ROS or 'Variation2'
+            if args.ros_version == 'varition2':
+                max_normality_score = 0
+                for i in range(args.n_classes_known):
+                    rot_predictions_0   = softmax(rot_cls[i](torch.cat((img_out, img_out), dim=1)))
+                    rot_predictions_90  = softmax(rot_cls[i](torch.cat((rot_out_90, img_out), dim=1)))
+                    rot_predictions_180 = softmax(rot_cls[i](torch.cat((rot_out_180, img_out), dim=1)))
+                    rot_predictions_270 = softmax(rot_cls[i](torch.cat((rot_out_270, img_out), dim=1)))
+
+                    normality_score_0, _   = torch.max(rot_predictions_0, 1)
+                    normality_score_90, _  = torch.max(rot_predictions_90, 1)
+                    normality_score_180, _ = torch.max(rot_predictions_180, 1)
+                    normality_score_270, _ = torch.max(rot_predictions_270, 1)
+
+                    normality_score = np.mean([normality_score_0.item(), normality_score_90.item(), normality_score_180.item(), normality_score_270.item()])                    
+                    if max_normality_score < normality_score:
+                        max_normality_score = normality_score
+
+                normality_score = max_normality_score
+            elif args.ros_version == 'ROS':
+                rot_predictions_0   = rot_cls(torch.cat((rot_out_0, rot_out_0), dim=1))
+                rot_predictions_90  = rot_cls(torch.cat((rot_out_90, rot_out_0), dim=1))
+                rot_predictions_180 = rot_cls(torch.cat((rot_out_180, rot_out_0), dim=1))
+                rot_predictions_270 = rot_cls(torch.cat((rot_out_270, rot_out_0), dim=1))
+                
+                normality_score_0, _   = torch.max(rot_predictions_0, 1)
+                normality_score_90, _  = torch.max(rot_predictions_90, 1)
+                normality_score_180, _ = torch.max(rot_predictions_180, 1)
+                normality_score_270, _ = torch.max(rot_predictions_270, 1)
+
+                normality_score = np.mean([normality_score_0.item(), normality_score_90.item(), normality_score_180.item(), normality_score_270.item()])
+
+            normality_scores.append(normality_score)
+
+
+
+
             ###
             flip_prediction_img = flip_cls(torch.cat((img_out, img_out), dim=1))
             flip_prediction_flip = flip_cls(torch.cat((flip_out, img_out), dim=1))
@@ -70,9 +109,6 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
             jig_normality_score_2, _ = torch.max(jig_prediction_2, 1)
             jig_normality_score_3, _ = torch.max(jig_prediction_3, 1)
 
-            normality_score = np.mean([rot_normality_score_0.item(), rot_normality_score_90.item(), rot_normality_score_180.item(), rot_normality_score_270.item()])
-
-            normality_scores.append(normality_score)
 
             if normality_score > args.threshold:
                 known_samples.append(img_path)
@@ -91,13 +127,17 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
 
     # This txt files will have the names of the target images selected as known
     target_known = open('new_txt_list/' + args.target + '_known_' + str(rand) + '.txt','a')
+    
+    source_path = 'txt_list/'+args.source+'_known.txt'
+    with open(source_path,'r') as f:
+        target_unknown.write(f.read())
 
     for path in known_samples:
-        target_known.write(path[0])
+        target_known.write((path[0][0]+" "+str(int(path[1])))+"\n")
     target_known.close()
 
     for path in unknown_samples:
-        target_unknown.write(path[0])
+        target_unknown.write((path[0][0]+" "+str(int(path[1])))+"\n")
     target_unknown.close()
 
     number_of_known_samples = len(known_samples)
