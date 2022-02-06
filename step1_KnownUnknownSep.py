@@ -112,8 +112,6 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
         img_loss = criterion(imgs_predictions, lbls)
         rot_loss = criterion(rot_predictions, rot_lbls)
         flip_loss = criterion(flip_prediction, flip_labl)
-        print(flip_prediction.shape, flip_labl.shape)
-        print(jigsaw_prediction.shape, jigsaw_labl.shape)
         jigsaw_loss = criterion(jigsaw_prediction, jigsaw_labl)
 
         loss = img_loss + args.weight_RotTask_step1*rot_loss + args.weight_FlipTask_step1*flip_loss + args.weight_JigsawTask_step1*jigsaw_loss
@@ -137,7 +135,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, sour
     return img_loss, img_acc, rot_loss, rot_acc, flip_loss, flip_acc, jigsaw_loss, jigsaw_acc
 
 def step1(args,feature_extractor,rot_cls,obj_cls, flip_cls, jigsaw_cls, source_loader,device):
-    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,rot_cls,obj_cls, args.epochs_step1, args.learning_rate, args.train_all)
+    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, rot_cls, flip_cls, jigsaw_cls, args.epochs_step1, args.learning_rate, args.train_all)
     criterion = nn.CrossEntropyLoss()
 
     for epoch in range(args.epochs_step1):

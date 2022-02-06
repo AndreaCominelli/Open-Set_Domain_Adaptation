@@ -4,8 +4,8 @@ from PIL import Image
 from itertools import permutations
 import random
 import math
-import matplotlib
-matplotlib.use('TkAgg', force=True)
+#import matplotlib
+#matplotlib.use('TkAgg', force=True)
 import matplotlib.pyplot as plt
 import numpy as npy
 from torchvision import transforms
@@ -156,13 +156,13 @@ class TestDataset(data.Dataset):
             _, img_90, img_180, img_270 = rotate_4_times(img)
             ###
             _, flipped = flip_2_times(img)
-            jig = some_jigsaw(img, self.img_size, self.jigsaw_dim)
+            jig = some_jigsaw(img, self.img_size, self.jigsaw_dim, 4)
         
         return img, int(self.labels[index]), img_90, img_180, img_270, flipped, jig[0], jig[1], jig[2], jig[3], img_path
 
     def __len__(self):
         return len(self.names)
-
+'''
 def imshow(img, lbl):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
@@ -187,3 +187,4 @@ if __name__ == "__main__":
     #imshow(flip_img, flip_labl)
     print(jigsaw_img.shape)
     imshow(jigsaw_img, jigsaw_labl)
+'''

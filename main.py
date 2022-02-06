@@ -36,7 +36,7 @@ def get_args():
 
     # training parameters
     parser.add_argument("--image_size", type=int, default=222, help="Image size")
-    parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
+    parser.add_argument("--batch_size", type=int, default=256, help="Batch size")
     parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate")
 
     parser.add_argument("--epochs_step1", type=int, default=10, help="Number of epochs of step1 for known/unknown separation")
@@ -52,7 +52,7 @@ def get_args():
     parser.add_argument("--weight_JigsawTask_step2", type=float, default=0.5, help="Weight for the jigsaw loss in step2")
     parser.add_argument("--threshold", type=float, default=0.5, help="Threshold for the known/unkown separation")
 
-    parser.add_argument("--jigsaw_dimension", type=tuple, default=(3,2), help="(horizontal_blocks, vertical_blocks)")
+    parser.add_argument("--jigsaw_dimension", type=tuple, default=(2,2), help="(horizontal_blocks, vertical_blocks)")
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
@@ -65,8 +65,8 @@ class Trainer:
     def __init__(self, args):
         self.args = args
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        #self.device = torch.device("cpu")
+        #self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
         
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor()
