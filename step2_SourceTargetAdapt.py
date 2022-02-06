@@ -42,7 +42,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,target_loader
         prediction_source = obj_cls(feature_source)
         _, cls_pred_source = torch.max(prediction_source, 1)
 
-        # 和step1很类似，同样是对旋转角度分类器进行训练
+
         # rot prediction
         if args.ros_version == 'variation2':
             rot_loss = 0
@@ -110,7 +110,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,target_loader
     unk = corrects_unknown / total_unknown
     hos = 2 * os_star * unk / (os_star + unk)
     print(" OS*: %.4f, UNK: %.4f, HOS: %.4f" % (os_star, unk, hos))
-    # 这里的HOS是根据论文里的公式算的
+
     
 def step2(args,feature_extractor,rot_cls,obj_cls,source_loader,target_loader_train,target_loader_eval,device):
     optimizer, scheduler = get_optim_and_scheduler(args,feature_extractor,rot_cls,obj_cls, args.epochs_step2, args.learning_rate, args.train_all)
