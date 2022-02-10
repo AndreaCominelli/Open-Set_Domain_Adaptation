@@ -1,76 +1,63 @@
-
 from matplotlib import image
 import torch
 import numpy as np
 from sklearn.metrics import roc_auc_score
 import random
 from tqdm import tqdm
+from torch import nn
 
 #### Implement the evaluation on the target for the known/unknown separation
-
-def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_loader_eval,device):
+def evaluation(args,feature_extractor, self_cls, multi_head, n_classes_known, target_loader_eval,device):
 
     feature_extractor.eval()
-    rot_cls.eval()
-    flip_cls.eval()
-    jigsaw_cls.eval()
+    for self_cls_i in self_cls:
+        self_cls_i.eval()
     
+    softmax = nn.Softmax(dim=1)
+
     normality_scores = []
     ground_truth = []
     known_samples = []
     unknown_samples = []
 
     with torch.no_grad():
-        for it, (img ,class_l, img_90, img_180, img_270, flipped, jig0, jig1, jig2, jig3, img_path) in tqdm(enumerate(target_loader_eval)):
+        for it, (img ,class_l, img_self_sup, img_path) in tqdm(enumerate(target_loader_eval)):
             img, class_l = img.to(device), class_l.to(device)
-            img_90, img_180, img_270 = img_90.to(device), img_180.to(device), img_270.to(device)
-            flipped, jig0, jig1, jig2, jig3 = flipped.to(device), jig0.to(device), jig1.to(device), jig2.to(device), jig3.to(device)
             
             if class_l > args.n_classes_known:
                 ground_truth.append(0)
             else:
                 ground_truth.append(1)
 
-            img_out   = feature_extractor(img)
-            rot_out_90  = feature_extractor(img_90)
-            rot_out_180 = feature_extractor(img_180)
-            rot_out_270 = feature_extractor(img_270)
-            ###
-            flip_out = feature_extractor(flipped)
-            jig0_out = feature_extractor(jig0)
-            jig1_out = feature_extractor(jig1)
-            jig2_out = feature_extractor(jig2)
-            jig3_out = feature_extractor(jig3)
+            normality_score_list = []
 
-            rot_predictions_0   = rot_cls(torch.cat((img_out, img_out), dim=1))
-            rot_predictions_90  = rot_cls(torch.cat((rot_out_90, img_out), dim=1))
-            rot_predictions_180 = rot_cls(torch.cat((rot_out_180, img_out), dim=1))
-            rot_predictions_270 = rot_cls(torch.cat((rot_out_270, img_out), dim=1))
-            ###
-            flip_prediction_img = flip_cls(torch.cat((img_out, img_out), dim=1))
-            flip_prediction_flip = flip_cls(torch.cat((flip_out, img_out), dim=1))
-            ### some jigsaw samples
-            jig_prediction_img = jigsaw_cls(torch.cat((img_out, img_out), dim=1))
-            jig_prediction_0 = jigsaw_cls(torch.cat((jig0_out, img_out), dim=1))
-            jig_prediction_1 = jigsaw_cls(torch.cat((jig1_out, img_out), dim=1))
-            jig_prediction_2 = jigsaw_cls(torch.cat((jig2_out, img_out), dim=1))
-            jig_prediction_3 = jigsaw_cls(torch.cat((jig3_out, img_out), dim=1))
+            if multi_head == 1:
+                normality_score = 0
+                for i in range(n_classes_known):
+                    img_out = feature_extractor(img)
+                    img_prediction = softmax(self_cls[i](torch.cat((img_out, img_out), dim=1)))
+                    normality_score_list.append(torch.max(img_prediction, 1)(0).item())
+                    for im in img_self_sup:
+                        im = im.to(device)
+                        self_out = feature_extractor(im)
+                        self_prediction = softmax(self_cls[i](torch.cat((self_out, img_out), dim=1)))
+                        normality_score_list.append(torch.max(self_prediction, 1)(0).item())
+                    act_norm_score = np.mean(normality_score_list)
+                    if normality_score < act_norm_score:
+                        normality_score = act_norm_score
+            
+            else:
+                img_out = feature_extractor(img)
+                img_prediction = softmax(self_cls[0](torch.cat((img_out, img_out), dim=1)))
+                normality_score_list.append(torch.max(img_prediction, 1)(0).item())
 
-            rot_normality_score_0, _   = torch.max(rot_predictions_0, 1)
-            rot_normality_score_90, _  = torch.max(rot_predictions_90, 1)
-            rot_normality_score_180, _ = torch.max(rot_predictions_180, 1)
-            rot_normality_score_270, _ = torch.max(rot_predictions_270, 1)
-            ###
-            flip_normality_score_img, _ = torch.max(flip_prediction_img, 1)
-            flip_normality_score_flip, _ = torch.max(flip_prediction_flip, 1)
-            ### some jigsaw samples
-            jig_normality_score_img, _ = torch.max(jig_prediction_img, 1)
-            jig_normality_score_0, _ = torch.max(jig_prediction_0, 1)
-            jig_normality_score_1, _ = torch.max(jig_prediction_1, 1)
-            jig_normality_score_2, _ = torch.max(jig_prediction_2, 1)
-            jig_normality_score_3, _ = torch.max(jig_prediction_3, 1)
+                for i in img_self_sup:
+                    im = i.to(device)
+                    self_out = feature_extractor(im)
+                    self_prediction = softmax(self_cls[0](torch.cat((self_out, img_out), dim=1)))
+                    normality_score_list.append(torch.max(self_prediction, 1)(0).item())
 
-            normality_score = np.mean([rot_normality_score_0.item(), rot_normality_score_90.item(), rot_normality_score_180.item(), rot_normality_score_270.item()])
+                normality_score = np.mean(normality_score_list)
 
             normality_scores.append(normality_score)
 
@@ -80,6 +67,8 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
                 unknown_samples.append(img_path)
     
     auroc = roc_auc_score(ground_truth, normality_scores)
+    print('normality_scores samples:',normality_scores[:5],normality_scores[4360:])
+    print('ground_truth samples:',ground_truth[:5],ground_truth[4360:])
     print('AUROC %.4f' % auroc)
 
     # create new txt files
@@ -103,13 +92,7 @@ def evaluation(args,feature_extractor,rot_cls, flip_cls, jigsaw_cls, target_load
     number_of_known_samples = len(known_samples)
     number_of_unknown_samples = len(unknown_samples)
 
-    print('The number of target samples selected as known is: ',number_of_known_samples)
+    print('The number of target samples selected as known is: ', number_of_known_samples)
     print('The number of target samples selected as unknown is: ', number_of_unknown_samples)
 
     return rand
-
-
-
-
-
-

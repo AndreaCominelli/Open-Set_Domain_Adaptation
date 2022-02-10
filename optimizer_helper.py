@@ -1,12 +1,13 @@
 from torch import optim
 
 
-def get_optim_and_scheduler(feature_extractor,obj_cls, rot_cls, flip_cls, jigsaw_cls, epochs, lr, train_all):
+def get_optim_and_scheduler(feature_extractor, obj_cls, self_cls, epochs, lr, train_all):
 
+    params = list(obj_cls.parameters())
+    for i in self_cls:
+        params += list(i.parameters())
     if train_all:
-        params = list(feature_extractor.parameters()) + list(rot_cls.parameters()) + list(obj_cls.parameters()) + list(flip_cls.parameters()) + list(jigsaw_cls.parameters())
-    else:
-        params = list(rot_cls.parameters()) + list(obj_cls.parameters()) + list(flip_cls.parameters()) + list(jigsaw_cls.parameters())
+        params += list(feature_extractor.parameters())
 
     optimizer = optim.SGD(params, weight_decay=.0005, momentum=.9, lr=lr)
     step_size = int(epochs * .8)
