@@ -57,7 +57,7 @@ def get_args():
     parser.add_argument("--weight_RotTask_MH_step2", type=float, default=0.5, help="Weight for the rotation multi-head loss in step2")
     parser.add_argument("--weight_FlipTask_step2", type=float, default=0.5, help="Weight for the flip loss in step2")
     parser.add_argument("--weight_JigsawTask_step2", type=float, default=0.5, help="Weight for the jigsaw loss in step2")
-    parser.add_argument("--threshold_", type=float, default=0.5, help="Threshold for the known/unkown separation")
+    parser.add_argument("--threshold", type=float, default=0.5, help="Threshold for the known/unkown separation")
 
     parser.add_argument("--jigsaw_dimension", type=tuple, default=(3,3), help="(horizontal_blocks, vertical_blocks)")
     parser.add_argument("--jigsaw_permutations", type=int, default=31, help="Number of max permutations (maximum Hamming Distance)")
@@ -142,24 +142,24 @@ class Trainer:
             if not os.path.isfile(f"./models/{self_sup_cls}_{mod}_params.pt"):
                 model_present = False
 
-        if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and model_present:
+        if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.device)
             torch.save(fe_model, "./models/feature_extractor_params.pt")
             torch.save(obj_model, "./models/obj_cls_params.pt")
             for i in range(len(self_model)):
-                torch.save(self_model[i], f"./models/{self_sup_cls}_{i}_param.pt")
+                torch.save(self_model[i], f"./models/{self_sup_cls}_{i}_params.pt")
 
         # if params are already computed, load the model and procede with its evaluation
         
-        self.feature_extractor.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
-        self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt", strict=False))
+        self.feature_extractor.load_state_dict(torch.load("./models/feature_extractor_params.pt"), strict=False)
+        self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt"), strict=False)
         for i in range(len(self.cls_dict[self_sup_cls][1])):
-            self.cls_dict[self_sup_cls][1[i]].load_state_dict(torch.load(f"./{self_sup_cls}_{i}_params.pt"), strict=False)
+            self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self_sup_cls}_{i}_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
 
-        rand = evaluation(self.args, self.feature_extractor, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.args.n_classes_known, self.target_loader_eval,self.device)
+        rand = evaluation(self.feature_extractor, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.args.n_classes_known, self.args.threshold, self.target_loader_eval, self.args.source, self.args.target, self.device)
 
         # new dataloaders
         source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'
