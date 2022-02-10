@@ -68,5 +68,9 @@ def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight
         obj_loss, obj_acc, self_loss, self_acc = _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, weight, optimizer,device,criterion)
         print("Obj-Class Loss %.4f, Obj-Class Accuracy %.4f, Self_sup Loss %.4f, Self_sup Accuracy %.4f" % (obj_loss.item(), obj_acc, self_loss.item(), self_acc))
         scheduler.step()
+
+    self_cls_model = []
+    for i in self_cls:
+        self_cls_model.append(self_cls[i].state_dict())
     
-    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls.state_dict()
+    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls_model
