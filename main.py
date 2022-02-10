@@ -135,7 +135,14 @@ class Trainer:
         print("Dataset size: source %d, target %d" % (len(self.source_loader.dataset), len(self.target_loader_train.dataset)))
 
         # just check if final training parameters are saved somewhere. If so, so not train again
-        if not os.path.isfile("./feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and not os.path.isfile(f"./{self_sup_cls}_params.pt"):
+        model_present = True
+        mod = 0
+        while (model_present and mod < len(self.cls_dict[self_sup_cls][1])):
+            mod += 1
+            if not os.path.isfile(f"./models/{self_sup_cls}_{mod}_params.pt"):
+                model_present = False
+
+        if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.device)
             torch.save(fe_model, "./models/feature_extractor_params.pt")
@@ -147,7 +154,8 @@ class Trainer:
         
         self.feature_extractor.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
         self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt", strict=False))
-        self.cls_dict[self_sup_cls][1].load_state_dict(torch.load(f"./{self_sup_cls}_params.pt"), strict=False)
+        for i in range(len(self.cls_dict[self_sup_cls][1])):
+            self.cls_dict[self_sup_cls][1[i]].load_state_dict(torch.load(f"./{self_sup_cls}_{i}_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
 

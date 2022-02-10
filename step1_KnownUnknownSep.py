@@ -71,6 +71,6 @@ def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight
 
     self_cls_model = []
     for i in self_cls:
-        self_cls_model.append(self_cls[i].state_dict())
+        self_cls_model.append(i.state_dict())
     
     return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls_model
