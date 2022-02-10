@@ -73,8 +73,8 @@ class Trainer:
     def __init__(self, args):
         self.args = args
 
-        #self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.device = torch.device("cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        #self.device = torch.device("cpu")
         
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor().to(self.device)
@@ -168,11 +168,11 @@ def main():
     args = get_args()
     trainer = Trainer(args)
     print("---Rotation Self-Supervised Task---")
-    #trainer.do_training("rot_cls")
+    trainer.do_training("rot_cls")
     print("---Multi-Head Self-Supervised Task---")
-    #trainer.do_training("rot_MH_cls")
+    trainer.do_training("rot_MH_cls")
     print("---Flip Self-Supervised Task---")
-    #trainer.do_training("flip_cls")
+    trainer.do_training("flip_cls")
     print("---Jigsaw Self-Supervised Task---")
     trainer.do_training("jigsaw_cls")
 
