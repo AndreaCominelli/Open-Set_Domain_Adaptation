@@ -140,7 +140,7 @@ class Trainer:
             fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.device)
             torch.save(fe_model, "./models/feature_extractor_params.pt")
             torch.save(obj_model, "./models/obj_cls_params.pt")
-            for i in self.cls_dict[self_sup_cls][1]:
+            for i in range(len(self_model)):
                 torch.save(self_model[i], f"./models/{self_sup_cls}_{i}_param.pt")
 
         # if params are already computed, load the model and procede with its evaluation
