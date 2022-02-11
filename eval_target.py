@@ -24,7 +24,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
         for it, (img ,class_l, img_self_sup, img_path) in tqdm(enumerate(target_loader_eval)):
             img, class_l = img.to(device), class_l.to(device)
             
-            if class_l > n_classes_known:
+            if class_l >= n_classes_known:
                 ground_truth.append(0)
             else:
                 ground_truth.append(1)

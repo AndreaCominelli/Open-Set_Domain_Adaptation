@@ -163,7 +163,7 @@ class Trainer:
 
         # new dataloaders
         source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'
-        self.source_loader = data_helper.get_train_dataloader(self.args,source_path_file, self.cls_dict[self_sup_cls][1])
+        self.source_loader = data_helper.get_train_dataloader(self.args,source_path_file, self.cls_dict[self_sup_cls][0])
 
         target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
