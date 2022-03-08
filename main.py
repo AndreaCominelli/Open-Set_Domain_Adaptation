@@ -84,12 +84,13 @@ class Trainer:
             rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
             rot_MH_cls = ("rotation", []),
             flip_cls = ("flip", [Classifier(512*2,2).to(self.device)]),
-            #flip_MH_cls = ("flip", []),
+            flip_MH_cls = ("flip", []),
             jigsaw_cls = ("jigsaw", [Classifier(512*2,args.jigsaw_permutations).to(self.device)])
         )
 
         for _ in range(args.n_classes_known):
             self.cls_dict["rot_MH_cls"][1].append(Classifier(512*2,4).to(self.device))
+            self.cls_dict["flip_MH_cls"][1].append(Classifier(512*2,2).to(self.device))
 
         ###DO ANOTHER DICT IF WE NEED DIFFERENT LEARNING RATES PER TASK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -181,8 +182,10 @@ def main():
     trainer.do_training("flip_cls")
     print("---Jigsaw Self-Supervised Task---")
     trainer.do_training("jigsaw_cls")
-    print("---Multi-Head Self-Supervised Task---")
+    print("---Multi-Head Rotation Self-Supervised Task---")
     trainer.do_training("rot_MH_cls")
+    print("---Multi-Head Flip Self-Supervised Task---")
+    trainer.do_training("flip_MH_cls")
 
 if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
