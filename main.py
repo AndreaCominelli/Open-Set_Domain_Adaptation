@@ -1,10 +1,11 @@
 import argparse
 from email.policy import strict
 import os
+
 import math
-
 import torch
-
+from Logger import Logger
+import sys
 import data_helper
 from resnet import resnet18_feat_extractor, Classifier
 
@@ -64,7 +65,7 @@ def get_args():
 
     # tensorboard logger
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
-    parser.add_argument("--folder_name", default=None, help="Used by the logger to save logs")
+    parser.add_argument("--folder_name", default="./logs", help="Used by the logger to save logs")
 
     return parser.parse_args()
 
@@ -175,6 +176,9 @@ class Trainer:
 
 def main():
     args = get_args()
+    current_time = datetime.datetime.strftime(datetime.datetime.now(),'%Y_%m_%d_%H_%M_%S')
+    sys.stdout = Logger(args.folder_name+'/'+current_time+'.log',sys.stdout)
+    sys.stderr = Logger(args.folder_name+'/'+current_time+'.log',sys.stderr)
     trainer = Trainer(args)
     print("---Rotation Self-Supervised Task---")
     trainer.do_training("rot_cls")

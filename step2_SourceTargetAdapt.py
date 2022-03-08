@@ -11,6 +11,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 
     criterion = nn.CrossEntropyLoss()
     feature_extractor.train()
+    
     for self_cls_i in self_cls:
         self_cls_i.train()
     
@@ -72,12 +73,14 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 
     print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(), acc_cls, self_loss.item(), acc_rot))
 
+
     #### Implement the final evaluation step, computing OS*, UNK and HOS
     feature_extractor.eval()
     obj_cls.eval()
     
     for rot_cls_i in self_cls:
         rot_cls_i.eval()
+
 
     corrects_known = 0
     corrects_unknown = 0
@@ -111,5 +114,5 @@ def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,t
     
     for epoch in range(args.epochs_step2):
         print('Epoch: ',epoch)
+
         _do_epoch(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
-        scheduler.step()

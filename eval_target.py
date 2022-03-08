@@ -25,6 +25,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             img, class_l = img.to(device), class_l.to(device)
             
             if class_l >= n_classes_known:
+
                 ground_truth.append(0)
             else:
                 ground_truth.append(1)
@@ -64,7 +65,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             if normality_score > threshold:
                 known_samples.append(img_path)
             else:
-                unknown_samples.append(img_path)
+                unknown_samples.append((img_path,args.n_classes_known))
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('normality_scores samples:',normality_scores[:5],normality_scores[4360:])
@@ -80,6 +81,10 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
 
     # This txt files will have the names of the target images selected as known
     target_known = open('new_txt_list/' + target_dir + '_known_' + str(rand) + '.txt','a')
+
+    source_path = 'txt_list/'+args.source+'_known.txt'
+    with open(source_path,'r') as f:
+        target_unknown.write(f.read())
 
     for path in known_samples:
         target_known.write((path[0][0]+" "+str(int(path[1])))+"\n")
