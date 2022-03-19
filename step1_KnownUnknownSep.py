@@ -59,8 +59,8 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, w
 
     return img_loss, img_acc, self_loss, self_acc
 
-def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight, n_epochs, learning_rate, train_all, device):
-    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, train_all)
+def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight, n_epochs, learning_rate, weight_decay, train_all, device):
+    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, weight_decay, train_all)
     criterion = nn.CrossEntropyLoss()
 
     for epoch in range(n_epochs):
