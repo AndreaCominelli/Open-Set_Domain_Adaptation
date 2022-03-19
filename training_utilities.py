@@ -4,4 +4,4 @@
 import math
 from scipy.stats import expon
 
-print(expon(scale = 100))
+print(list(expon(scale = 100)))
