@@ -1,7 +1,7 @@
 # log uniform
 # https://en.wikipedia.org/wiki/Reciprocal_distribution
+import numpy as npy
 
-import math
-from scipy.stats import expon
+x = npy.random.exponential()
 
-print(list(expon(scale = 100)))
+print(x)
