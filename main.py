@@ -178,14 +178,14 @@ def main():
     trainer = Trainer(args)
     print("---Rotation Self-Supervised Task---")
     trainer.do_training("rot_cls")
-    print("---Flip Self-Supervised Task---")
+    """print("---Flip Self-Supervised Task---")
     trainer.do_training("flip_cls")
     print("---Jigsaw Self-Supervised Task---")
     trainer.do_training("jigsaw_cls")
     print("---Multi-Head Rotation Self-Supervised Task---")
     trainer.do_training("rot_MH_cls")
     print("---Multi-Head Flip Self-Supervised Task---")
-    trainer.do_training("flip_MH_cls")
+    trainer.do_training("flip_MH_cls")"""
 
 if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
