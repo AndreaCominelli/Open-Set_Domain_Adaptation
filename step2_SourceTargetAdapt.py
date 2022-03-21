@@ -113,6 +113,6 @@ def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,t
 
     for epoch in range(args.epochs_rot_step2):
         print('Epoch: ',epoch)
-        _do_epoch(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
+        _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
         if args.enable_scheduler:    
             scheduler.step()

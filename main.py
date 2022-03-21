@@ -15,6 +15,16 @@ import numpy as npy
 
 from torch.utils.data.sampler import SubsetRandomSampler
 
+"""
+1) Find best model with learning rate and weight decay random values
+(we must first search the model who better learn)
+2) Once it has been found, look at the AUROC.
+3) Improve the AUROC score by tuning the model on the loss's weight and threshold
+4) Look at the final result at step 2 (HOS) using the model tuned at 3)
+5) Repeat the process with different self-supervised strategies
+6) Check if other strategies improved the final results
+"""
+
 def get_args():
     parser = argparse.ArgumentParser(description="Script to launch training",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
