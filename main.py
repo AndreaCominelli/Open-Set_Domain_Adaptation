@@ -38,7 +38,8 @@ def get_args():
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
     parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate")
     parser.add_argument("--weight_decay", type=float, default=0.0005, help="Weight decay")
-
+    parser.add_argument("--enable_scheduler", type=bool, default=True, help="If true, the system will apply a learning rate decay policy every n epochs")
+    
     parser.add_argument("--epochs_rot_step1", type=int, default=10, help="Number of epochs of step1 for known/unknown separation in rotation training")
     parser.add_argument("--epochs_rot_step2", type=int, default=10, help="Number of epochs of step2 for source-target adaptation in rotation training")
     parser.add_argument("--epochs_rot_MH_step1", type=int, default=10, help="Number of epochs of step1 for known/unknown separation in rotation multi-head training")
@@ -149,7 +150,7 @@ class Trainer:
 
         if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and not model_present:
             print('Step 1 --------------------------------------------')
-            fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.device)
+            fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.args.enable_scheduler, self.device)
             if self.args.save_model:
                 torch.save(fe_model, "./models/feature_extractor_params.pt")
                 torch.save(obj_model, "./models/obj_cls_params.pt")
