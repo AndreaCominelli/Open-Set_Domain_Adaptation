@@ -67,6 +67,9 @@ def get_args():
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
     parser.add_argument("--folder_name", default=None, help="Used by the logger to save logs")
 
+    # save model
+    parser.add_argument("--save_model", type=bool, default=False, help="If true, the current model will be saved between one training session and the next one")
+
     return parser.parse_args()
 
 
@@ -147,17 +150,19 @@ class Trainer:
         if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt") and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.device)
-            torch.save(fe_model, "./models/feature_extractor_params.pt")
-            torch.save(obj_model, "./models/obj_cls_params.pt")
-            for i in range(len(self_model)):
-                torch.save(self_model[i], f"./models/{self_sup_cls}_{i}_params.pt")
+            if self.args.save_model:
+                torch.save(fe_model, "./models/feature_extractor_params.pt")
+                torch.save(obj_model, "./models/obj_cls_params.pt")
+                for i in range(len(self_model)):
+                    torch.save(self_model[i], f"./models/{self_sup_cls}_{i}_params.pt")
 
         # if params are already computed, load the model and procede with its evaluation
         
-        self.feature_extractor.load_state_dict(torch.load("./models/feature_extractor_params.pt"), strict=False)
-        self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt"), strict=False)
-        for i in range(len(self.cls_dict[self_sup_cls][1])):
-            self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self_sup_cls}_{i}_params.pt"), strict=False)
+        if os.path.isfile("./models/feature_extractor_params.pt") and os.path.isfile("./models/obj_cls_params.pt"):
+            self.feature_extractor.load_state_dict(torch.load("./models/feature_extractor_params.pt"), strict=False)
+            self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt"), strict=False)
+            for i in range(len(self.cls_dict[self_sup_cls][1])):
+                self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self_sup_cls}_{i}_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
 
@@ -186,8 +191,8 @@ def main():
     print("---Multi-Head Rotation Self-Supervised Task---")
     trainer.do_training("rot_MH_cls")
     print("---Multi-Head Flip Self-Supervised Task---")
-    trainer.do_training("flip_MH_cls")"""
-
+    trainer.do_training("flip_MH_cls")
+"""
 if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
     main()
