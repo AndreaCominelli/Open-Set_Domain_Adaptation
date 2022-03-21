@@ -107,7 +107,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 
     
 def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval, weight, n_epochs, learning_rate, train_all, n_class_known, n_class_tot, device):
-    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, train_all)
+    optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, args.weight_decay, train_all)
     
     for epoch in range(args.epochs_step2):
         print('Epoch: ',epoch)

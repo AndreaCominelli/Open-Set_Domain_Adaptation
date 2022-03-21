@@ -59,7 +59,6 @@ class ResNet(nn.Module):
         x = x.view(x.size(0), -1)
         return x
 
-
 class Classifier(nn.Module):
     def __init__(self,input_size,classes):
         super(Classifier, self).__init__()
@@ -81,3 +80,10 @@ def resnet18_feat_extractor():
 
     return model
 
+# WARNING - CHECK AGAIN IF RESNET152 WORKS
+
+def resnet152_feat_extractor():
+    model = ResNet(BasicBlock, [2, 2, 2, 2])
+    model.load_state_dict(model_zoo.load_url(model_urls['resnet152']), strict=False)
+
+    return model
