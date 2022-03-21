@@ -82,11 +82,11 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
     target_known = open('new_txt_list/' + target_dir + '_known_' + str(rand) + '.txt','a')
 
     for path in known_samples:
-        target_known.write(path[0]+"\n")
+        target_known.write(path+"\n")
     target_known.close()
 
     for path in unknown_samples:
-        target_unknown.write(path[0]+"\n")
+        target_unknown.write(path+"\n")
     target_unknown.close()
 
     number_of_known_samples = len(known_samples)
