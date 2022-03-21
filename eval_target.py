@@ -21,7 +21,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
     unknown_samples = []
 
     with torch.no_grad():
-        for it, (img ,class_l, img_self_sup, img_path) in tqdm(enumerate(target_loader_eval)):
+        for _, (img ,class_l, img_self_sup, img_path) in tqdm(enumerate(target_loader_eval)):
             img, class_l = img.to(device), class_l.to(device)
             
             if class_l >= n_classes_known:
@@ -62,6 +62,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             normality_scores.append(normality_score)
 
             if normality_score > threshold:
+                print(f"IMAGE PATH -----> {img_path}")
                 known_samples.append(img_path)
             else:
                 unknown_samples.append(img_path)
