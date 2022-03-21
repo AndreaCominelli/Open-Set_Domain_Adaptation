@@ -109,7 +109,9 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval, weight, n_epochs, learning_rate, train_all, n_class_known, n_class_tot, device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, args.weight_decay, train_all)
     
-    for epoch in range(args.epochs_step2):
+    # WARNING! NOW WE MUST CHOOSE THE NUM OF EPOCHS BASED ON THE SELF SUPERVISED CLASSIFIER WE CHOOSE
+
+    for epoch in range(args.epochs_rot_step2):
         print('Epoch: ',epoch)
         _do_epoch(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
         if args.enable_scheduler:    
