@@ -62,10 +62,9 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             normality_scores.append(normality_score)
 
             if normality_score > threshold:
-                print(f"IMAGE PATH -----> {img_path}")
-                known_samples.append(img_path)
+                known_samples.append(img_path + " " + class_l)
             else:
-                unknown_samples.append(img_path)
+                unknown_samples.append(img_path + " " + class_l)
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('normality_scores samples:',normality_scores[:5],normality_scores[4360:])
@@ -83,11 +82,11 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
     target_known = open('new_txt_list/' + target_dir + '_known_' + str(rand) + '.txt','a')
 
     for path in known_samples:
-        target_known.write((path[0][0]+" "+str(int(path[1])))+"\n")
+        target_known.write(path[0]+"\n")
     target_known.close()
 
     for path in unknown_samples:
-        target_unknown.write((path[0][0]+" "+str(int(path[1])))+"\n")
+        target_unknown.write(path[0]+"\n")
     target_unknown.close()
 
     number_of_known_samples = len(known_samples)
