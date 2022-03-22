@@ -44,7 +44,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
         if multi_head == 1:
             self_prediction_target = self_cls[0](torch.cat((feature_target_self, feature_target), dim=1))
             self_loss = criterion(self_prediction_target, self_l_target)
-            _, self_preds = torch.max(self_predictions, 1)
+            _, self_preds = torch.max(self_prediction_target, 1) # it was "self_predictions" not "self_prediction_target" ??
             self_corrects += torch.sum(self_preds == self_l_target.data)
         else:
             self_loss = 0

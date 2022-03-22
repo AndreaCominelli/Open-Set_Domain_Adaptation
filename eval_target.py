@@ -31,12 +31,15 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
 
             normality_score_list = []
 
+            # se multi_head == 1 -> prima predico la rotazione dell'immagine non ruotata
+            # poi di tutte le sue rotazioni (sempre concatenando con l'immagine originale)
+
             if multi_head == 1:
               img_out = feature_extractor(img)
               img_prediction = softmax(self_cls[0](torch.cat((img_out, img_out), dim=1)))
               normality_score_list.append(torch.max(img_prediction, 1)[0].item())
 
-              for i in img_self_sup:
+              for i in img_self_sup: # img_self_sup contiene tutte le rotazioni dell'immagine img
                   im = i.to(device)
                   self_out = feature_extractor(im)
                   self_prediction = softmax(self_cls[0](torch.cat((self_out, img_out), dim=1)))
