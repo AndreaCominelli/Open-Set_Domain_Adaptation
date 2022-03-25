@@ -79,24 +79,24 @@ def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight
 
     # write all statistics on file. We will plot them later
 
-        self_accuracies_list = [(k, v) for k, v in self_accuracies.items()]
-        obj_accuracies_list = [(k, v) for k, v in obj_accuracies.items()]
-        
-        self_stats = open("./stats/self_stats.txt", "a")
-        obj_stats = open("./stats/obj_stats.txt", "a")
-        statistics = ""
-        for self_acc in self_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
-            statistics += str(self_acc[0]) + ":" + str(self_acc[1].item()) + ","
-        statistics += str(weight) + "\n"
-        self_stats.write(statistics)
-        self_stats.close()
+    self_accuracies_list = [(k, v) for k, v in self_accuracies.items()]
+    obj_accuracies_list = [(k, v) for k, v in obj_accuracies.items()]
+    
+    self_stats = open("./stats/self_stats.txt", "a")
+    obj_stats = open("./stats/obj_stats.txt", "a")
+    statistics = ""
+    for self_acc in self_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
+        statistics += str(self_acc[0]) + ":" + str(self_acc[1].item()) + ","
+    statistics += str(weight) + "\n"
+    self_stats.write(statistics)
+    self_stats.close()
 
-        statistics = ""
-        for obj_acc in obj_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
-            statistics += str(obj_acc[0]) + ":" + str(obj_acc[1].item()) + ","
-        statistics += str(weight) + "\n"
-        obj_stats.write(statistics)
-        obj_stats.close()
+    statistics = ""
+    for obj_acc in obj_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
+        statistics += str(obj_acc[0]) + ":" + str(obj_acc[1].item()) + ","
+    statistics += str(weight) + "\n"
+    obj_stats.write(statistics)
+    obj_stats.close()
 
     self_cls_model = []
     for i in self_cls:
