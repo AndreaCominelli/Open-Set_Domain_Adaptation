@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from optimizer_helper import get_optim_and_scheduler
 from tqdm import tqdm
+import plot_utils as plt
 
 #### Implement Step1
 
@@ -62,13 +63,40 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, w
 def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight, n_epochs, learning_rate, weight_decay, train_all, enable_scheduler, device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, weight_decay, train_all)
     criterion = nn.CrossEntropyLoss()
+    self_accuracies = {}
+    obj_accuracies = {}
 
     for epoch in range(n_epochs):
         print('Epoch: ',epoch)
         obj_loss, obj_acc, self_loss, self_acc = _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, weight, optimizer,device,criterion)
+        
+        self_accuracies[epoch] = self_acc
+        obj_accuracies[epoch] = obj_acc
+        
         print("Obj-Class Loss %.4f, Obj-Class Accuracy %.4f, Self_sup Loss %.4f, Self_sup Accuracy %.4f" % (obj_loss.item(), obj_acc, self_loss.item(), self_acc))
         if enable_scheduler:    
             scheduler.step()
+
+    # write all statistics on file. We will plot them later
+
+    self_accuracies_list = [(k, v) for k, v in self_accuracies.items()]
+    obj_accuracies_list = [(k, v) for k, v in obj_accuracies.items()]
+    
+    self_stats = open("./stats/self_stats.txt", "a")
+    obj_stats = open("./stats/obj_stats.txt", "a")
+    str = ""
+    for self_acc in self_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
+        str += self_acc[0] + ":" + self_acc[1] + ","
+    str += weight + "\n"
+    self_stats.write(str)
+    self_stats.close()
+
+    str = ""
+    for obj_acc in obj_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
+        str += obj_acc[0] + ":" + obj_acc[1] + ","
+    str += weight + "\n"
+    obj_stats.write(str)
+    obj_stats.close()
 
     self_cls_model = []
     for i in self_cls:
