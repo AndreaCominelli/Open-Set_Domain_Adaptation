@@ -1,9 +1,9 @@
-import numpy as npy
+"""import numpy as npy
 import seaborn as sb
 import matplotlib.pyplot as plt
 import random
 
-"""def sinplot(flip=1):
+def sinplot(flip=1):
     colors = sb.color_palette("deep")
     x = npy.linspace(0, 14, 100)
     for i in range(1, 7):
@@ -13,7 +13,7 @@ import random
     plt.legend()
     plt.xlabel("Etichetta x")
     plt.ylabel("Etichetta y")
-    plt.show()"""
+    plt.show()
 
 acc1 = {
     1:0.05,
@@ -47,4 +47,4 @@ fig=plt.figure()
 plot = fig.add_subplot()
 plot_self_acc(plot, acc1, 0.5)
 plot_self_acc(plot, acc2, 0.5)
-plt.show()
+plt.show()"""
