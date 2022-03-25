@@ -84,18 +84,18 @@ def step1(feature_extractor,obj_cls, self_cls, multi_head, source_loader, weight
     
     self_stats = open("./stats/self_stats.txt", "a")
     obj_stats = open("./stats/obj_stats.txt", "a")
-    str = ""
+    statistics = ""
     for self_acc in self_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
-        str += self_acc[0] + ":" + self_acc[1] + ","
-    str += weight + "\n"
-    self_stats.write(str)
+        statistics += str(self_acc[0]) + ":" + str(self_acc[1]) + ","
+    statistics += str(weight) + "\n"
+    self_stats.write(statistics)
     self_stats.close()
 
-    str = ""
+    statistics = ""
     for obj_acc in obj_accuracies_list: # 1:0.05 , 2:0.15... epoch:accuracy
-        str += obj_acc[0] + ":" + obj_acc[1] + ","
-    str += weight + "\n"
-    obj_stats.write(str)
+        statistics += str(obj_acc[0]) + ":" + str(obj_acc[1]) + ","
+    statistics += str(weight) + "\n"
+    obj_stats.write(statistics)
     obj_stats.close()
 
     self_cls_model = []
