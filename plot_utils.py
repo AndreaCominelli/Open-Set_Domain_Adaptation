@@ -1,50 +1,37 @@
-"""import numpy as npy
+import math
 import seaborn as sb
 import matplotlib.pyplot as plt
-import random
-
-def sinplot(flip=1):
-    colors = sb.color_palette("deep")
-    x = npy.linspace(0, 14, 100)
-    for i in range(1, 7):
-        plt.plot(x, npy.sin(x + i * .5) * (7 - i) * flip, 
-                color=colors[random.randint(0, len(colors) - 1)], linewidth=3, label=f"plot {i}",
-                linestyle="dotted")
-    plt.legend()
-    plt.xlabel("Etichetta x")
-    plt.ylabel("Etichetta y")
-    plt.show()
-
-acc1 = {
-    1:0.05,
-    2:0.15,
-    3:0.30,
-    4:0.40,
-    5:0.45
-}
-
-acc2={
-    1:0.45,
-    2:0.40,
-    3:0.30,
-    4:0.15,
-    5:0.05
-}
 
 colors = ["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"]
 
-def plot_self_acc(plot, self_accuracies, weight):
-    keys = self_accuracies.keys()
-    values = list(self_accuracies.values())
-    plot.plot(keys, values, linewidth=3, color=colors[4], label=weight)
+def truncate(number, digits=3):
+    stepper = 10.0 ** digits
+    return math.trunc(stepper * number) / stepper
 
-def plot_obj_acc():
-    pass
+def plot_acc(model="obj"):
+    sb.set_style("darkgrid")
+    if model == "obj":
+        path = "./stats/obj_stats.txt"
+    else:
+        path = "./stats/self_stats.txt"
+    print(path)
+    with open(path, "r") as f:
+        lines = f.readlines()
+        for i, line in enumerate(lines):
+            data = line.split(",")[0:-1]
+            param = line.split(",")[-1] #This is an hyper parameter value, hence it could be whatever we want (lr, weight decay ecc..)
+            epochs = []
+            accuracies = []
+            for d in data:
+                e = d.split(":")[0]
+                acc = truncate(float(d.split(":")[1]))
+                epochs.append(e)
+                accuracies.append(acc)
+            plt.plot(epochs, accuracies, linewidth=3, color=colors[i % len(colors)], label=param)
+            plt.xlabel("Epochs")
+            plt.ylabel("Accuracy")
+            plt.legend()
+        plt.show()
 
-sb.set_style("darkgrid")
-
-fig=plt.figure()
-plot = fig.add_subplot()
-plot_self_acc(plot, acc1, 0.5)
-plot_self_acc(plot, acc2, 0.5)
-plt.show()"""
+if __name__ == "__main__":
+    plot_acc(model="self")
