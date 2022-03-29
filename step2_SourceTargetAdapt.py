@@ -28,6 +28,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 
         ### CHECK!!!!
         try:
+            print("QUANTE VOLTE LO FACCIO")
             (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
         except:
             print("Eccezione")
