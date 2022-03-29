@@ -6,6 +6,10 @@ import numpy as np
 from tqdm import tqdm
 
 #### Implement Step2
+# In order to solve the second step, I just evaluate together the performance on source and target set
+# I pass to my backbone the source image in order to predict its category
+# then the target image with its rotated version. Here i must recognise the rotation i applied
+# Finally, i combine the 2 losses
 
 def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device):
 
@@ -20,7 +24,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     img_corrects = 0
     self_corrects = 0
 
-    for it, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
+    for _, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
 
         ### CHECK!!!!
         (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
@@ -32,16 +36,18 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
         optimizer.zero_grad()
 
         # extract features
+        # i send to the backbone the source image, the target image and the target image with self-supervised transformation
         feature_source = feature_extractor(data_source)
         feature_target = feature_extractor(data_target)
         feature_target_self = feature_extractor(self_data_target)
 
-        # object prediction
+        # object prediction on the source image
         prediction_source = obj_cls(feature_source)
         _, cls_pred_source = torch.max(prediction_source, 1)
 
         # training the rotation classifiers, similar to step1
         if multi_head == 1:
+            # prediction on target set of the rotated image (in case of rotation)
             self_prediction_target = self_cls[0](torch.cat((feature_target_self, feature_target), dim=1))
             self_loss = criterion(self_prediction_target, self_l_target)
             _, self_preds = torch.max(self_prediction_target, 1) # it was "self_predictions" not "self_prediction_target" ??
@@ -73,11 +79,14 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(), acc_cls, self_loss.item(), acc_rot))
 
     #### Implement the final evaluation step, computing OS*, UNK and HOS
+    # This is just an evaluation loop on the target set
+    # The model must be able to recognise objects belonging to the target set and 
+    # unknown ones.
     feature_extractor.eval()
     obj_cls.eval()
     
-    for rot_cls_i in self_cls:
-        rot_cls_i.eval()
+    """for rot_cls_i in self_cls:
+        rot_cls_i.eval()"""
 
     corrects_known = 0
     corrects_unknown = 0

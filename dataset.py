@@ -115,6 +115,9 @@ def all_jigsaw(img, img_size, jigsaw_dim, perm_list):
 
     return to_return
 
+# I pass as a parameter also the self-supervised classifier in order to
+# decide what transformation i need to apply
+
 class Dataset(data.Dataset):
     def __init__(self, args, names, labels, self_sup_cls, img_transformer=None):
         self.data_path = args.path_dataset

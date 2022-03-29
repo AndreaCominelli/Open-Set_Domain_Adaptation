@@ -102,6 +102,8 @@ class Trainer:
             jigsaw_cls = ("jigsaw", [Classifier(512*2,args.jigsaw_permutations).to(self.device)])
         )
 
+        # multi-head classifier
+
         for _ in range(args.n_classes_known):
             self.cls_dict["rot_MH_cls"][1].append(Classifier(512*2,4).to(self.device))
             self.cls_dict["flip_MH_cls"][1].append(Classifier(512*2,2).to(self.device))
@@ -179,9 +181,13 @@ class Trainer:
         rand = evaluation(self.feature_extractor, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.args.n_classes_known, self.args.threshold, self.target_loader_eval, self.args.source, self.args.target, self.device)
 
         # new dataloaders
+        # source_path_file -> contains the names of source and target images selected as unknown
+        # In this way i can train a model which is capable of recognising what are the known categories
+        # and the unknown ones
         source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'
         self.source_loader = data_helper.get_train_dataloader(self.args,source_path_file, self.cls_dict[self_sup_cls][0])
 
+        # target_path_file -> contains the names of target images which are considered as known
         target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
         self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
