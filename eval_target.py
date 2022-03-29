@@ -67,6 +67,10 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             if normality_score > threshold:
                 known_samples.append(img_path[0] + ' ' + str(class_l.item()))
             else:
+                # maybe this was the problem: objects that do not belong to the source set
+                # will have a label that is grather than n_class_know, thus
+                # it would be impossible for the model to predict them, since its last
+                # fc layer is composed by n_class_know + 1 neurons (+ 1 for the unknown class)
                 if class_l.item() > n_classes_known:
                     l = n_classes_known
                 else:

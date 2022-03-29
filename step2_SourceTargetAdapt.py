@@ -83,7 +83,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     #### Implement the final evaluation step, computing OS*, UNK and HOS
     # This is just an evaluation loop on the target set
     # The model must be able to recognise objects belonging to the target set and 
-    # unknown ones.
+    # unknown categories.
     feature_extractor.eval()
     obj_cls.eval()
     
@@ -96,7 +96,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     total_unknown = 0
 
     with torch.no_grad():
-        for it, (data, class_l,_,_,_,_) in tqdm(enumerate(target_loader_eval)):
+        for _, (data, class_l,_,_) in tqdm(enumerate(target_loader_eval)):
             data, class_l  = data.to(device), class_l.to(device)
             feature = feature_extractor(data)
             prediction = obj_cls(feature)
