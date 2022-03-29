@@ -37,8 +37,6 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
 
         optimizer.zero_grad()
 
-        class_l_source[class_l_source >= n_class_known] == n_class_known + 1
-
         # extract features
         # i send to the backbone the source image, the target image and the target image with self-supervised transformation
         feature_source = feature_extractor(data_source)

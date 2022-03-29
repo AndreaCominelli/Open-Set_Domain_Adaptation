@@ -67,7 +67,7 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             if normality_score > threshold:
                 known_samples.append(img_path[0] + ' ' + str(class_l.item()))
             else:
-                unknown_samples.append(img_path[0] + ' ' + str(class_l.item()))
+                unknown_samples.append(img_path[0] + ' ' + str(n_classes_known))
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('normality_scores samples:',normality_scores[:5],normality_scores[4360:])
