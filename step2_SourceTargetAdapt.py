@@ -19,7 +19,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
         self_cls_i.train()
     
     total_source_loader_num = len(source_loader.dataset)
-    target_loader_train = cycle(target_loader_train)
+    target_loader_train = iter(target_loader_train)
 
     img_corrects = 0
     self_corrects = 0
@@ -27,9 +27,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     for _, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
 
         ### CHECK!!!!
-        next(target_loader_train)
-
-        print("QUI CI SONO ARRIVATO")
+        (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
 
         data_source, class_l_source  = data_source.to(device), class_l_source.to(device)
         ### CHECK!!!!
