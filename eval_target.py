@@ -69,6 +69,8 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
             else:
                 if class_l.item() > n_classes_known:
                     l = n_classes_known
+                else:
+                    l = class_l.item()
                 unknown_samples.append(img_path[0] + ' ' + str(l))
     
     auroc = roc_auc_score(ground_truth, normality_scores)
