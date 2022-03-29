@@ -63,8 +63,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
                 self_corrects += torch.sum(self_preds == self_l_target[index])
 
         # calculate losses
-        print(f"LUNGHEZZA PREDIZIONI: {prediction_source.size()}")
-        print(f"CLASSI ESISTENTI: {class_l_source.size()}")
+        print(f"CLASSE NON ESISTENTE: {class_l_source}")
         class_loss = criterion(prediction_source,class_l_source)
         loss = class_loss + weight*self_loss
 
