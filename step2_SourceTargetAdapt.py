@@ -27,11 +27,9 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     for _, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
 
         ### CHECK!!!!
-        try:
-            print("QUANTE VOLTE LO FACCIO")
-            (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
-        except:
-            print("Eccezione")
+        # if args.batch_size > target_loader_train batch size, raise an exception
+        # it cannot iterate over the target_loader_train batch size
+        (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
 
         data_source, class_l_source  = data_source.to(device), class_l_source.to(device)
         ### CHECK!!!!
