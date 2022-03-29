@@ -19,7 +19,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
         self_cls_i.train()
     
     total_source_loader_num = len(source_loader.dataset)
-    target_loader_train = cycle(target_loader_train)
+    # target_loader_train = cycle(target_loader_train)
 
     img_corrects = 0
     self_corrects = 0
