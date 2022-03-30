@@ -1,6 +1,7 @@
 import math
 import seaborn as sb
 import matplotlib.pyplot as plt
+import numpy as npy
 
 colors = ["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"]
 
@@ -31,6 +32,7 @@ def plot_acc(model="obj"):
             plt.plot(epochs, accuracies, linewidth=3, color=colors[i % len(colors)], label=param)
             plt.xlabel("Epochs")
             plt.ylabel("Accuracy")
+            plt.xticks(npy.arange(0, epochs[-1], step=10))
             plt.legend()
         plt.show()
 
