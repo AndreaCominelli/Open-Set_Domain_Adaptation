@@ -161,6 +161,7 @@ class TestDataset(data.Dataset):
         self.n_perm = args.jigsaw_permutations
         self._image_transformer = img_transformer
         self.self_sup_cls = self_sup_cls
+        self.perm_list = get_permutations(args.jigsaw_dimension, args.jigsaw_permutations)
 
     def __getitem__(self, index):
 
@@ -183,3 +184,19 @@ class TestDataset(data.Dataset):
 
     def __len__(self):
         return len(self.names)
+
+"""if __name__ == "__main__":
+    
+    img_tr = [transforms.Resize((200, 200)), transforms.ToTensor(),
+              transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+    img_transforms = transforms.Compose(img_tr)
+    
+    names, labels = _dataset_info('txt_list/Art.txt')
+    img = Image.open("./data/" + names[0])
+    img = img_transforms(img)
+
+    perm_list = get_permutations((3,3), 31)
+    img_self_sup = all_jigsaw(img, 200, (3,3), perm_list)
+
+    plt.imshow(img_self_sup[0])
+    plt.show()"""
