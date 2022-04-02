@@ -77,8 +77,9 @@ def get_args():
     parser.add_argument("--tf_logger", type=bool, default=True, help="If true will save tensorboard compatible logs")
     parser.add_argument("--folder_name", default=None, help="Used by the logger to save logs")
 
-    # save model
+    # model options
     parser.add_argument("--save_model", type=bool, default=False, help="If true, the current model will be saved between one training session and the next one")
+    parser.add_argument("--self_sup_task", default="Rot", help="The type of self supervised task to apply: Rot, Flip, Jig, RotMH, FlipMH")
 
     return parser.parse_args()
 
@@ -198,17 +199,22 @@ class Trainer:
 def main():
     args = get_args()
     trainer = Trainer(args)
-    print("---Rotation Self-Supervised Task---")
-    trainer.do_training("rot_cls")
-    """print("---Flip Self-Supervised Task---")
-    trainer.do_training("flip_cls")
-    print("---Jigsaw Self-Supervised Task---")
-    trainer.do_training("jigsaw_cls")
-    print("---Multi-Head Rotation Self-Supervised Task---")
-    trainer.do_training("rot_MH_cls")
-    print("---Multi-Head Flip Self-Supervised Task---")
-    trainer.do_training("flip_MH_cls")
-"""
+    if args.self_sup_task == "Rot":
+        print("---Rotation Self-Supervised Task---")
+        trainer.do_training("rot_cls")
+    elif args.self_sup_task == "Flip":
+        print("---Flip Self-Supervised Task---")
+        trainer.do_training("flip_cls")
+    elif args.self_sup_task == "Jig":
+        print("---Jigsaw Self-Supervised Task---")
+        trainer.do_training("jigsaw_cls")
+    elif args.self_sup_task == "RotMH":
+        print("---Multi-Head Rotation Self-Supervised Task---")
+        trainer.do_training("rot_MH_cls")
+    elif args.self_sup_task == "FlipMH":
+        print("---Multi-Head Flip Self-Supervised Task---")
+        trainer.do_training("flip_MH_cls")
+
 if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
     main()

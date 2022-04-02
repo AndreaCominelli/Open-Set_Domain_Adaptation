@@ -2,7 +2,6 @@ import torch
 from torch import nn
 from optimizer_helper import get_optim_and_scheduler
 from tqdm import tqdm
-import plot_utils as plt
 
 #### Implement Step1
 
@@ -17,7 +16,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, w
     running_img_corrects = 0
     running_self_corrects = 0
 
-    for i, (imgs, lbls, self_imgs, self_lbls) in tqdm(enumerate(source_loader)):
+    for _, (imgs, lbls, self_imgs, self_lbls) in tqdm(enumerate(source_loader)):
         imgs = imgs.to(device)
         lbls = lbls.to(device)
         self_imgs = self_imgs.to(device)
