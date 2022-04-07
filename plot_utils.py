@@ -3,7 +3,7 @@ import seaborn as sb
 import matplotlib.pyplot as plt
 import numpy as npy
 
-colors = ["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"]
+colors = ["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500", "#AB3428"]
 
 def truncate(number, digits=3):
     stepper = 10.0 ** digits
