@@ -193,9 +193,9 @@ class Trainer:
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
         self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
 
-        if auroc > 0.50:
+        """if auroc > 0.50:
             print('Step 2 --------------------------------------------')
-            step2(self.args, self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader,self.target_loader_train,self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.args.n_classes_known, self.args.n_classes_tot, self.device)
+            step2(self.args, self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader,self.target_loader_train,self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.args.n_classes_known, self.args.n_classes_tot, self.device)"""
 
 def main():
     args = get_args()
