@@ -33,6 +33,8 @@ def get_train_transformers(args):
         img_tr.append(transforms.ColorJitter(brightness=args.jitter, contrast=args.jitter, saturation=args.jitter, hue=min(0.5, args.jitter)))
     if args.random_grayscale:
         img_tr.append(transforms.RandomGrayscale(args.random_grayscale))
+    if args.random_blur:
+        img_tr.append(transforms.GaussianBlue(kernel_size=(int(args.image_size), int(args.image_size)), sigma=(args.random_grayscale, 2)))
 
     img_tr = img_tr + [transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
 

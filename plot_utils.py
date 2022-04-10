@@ -28,13 +28,13 @@ def plot_acc(model="obj"):
                 acc = truncate(float(d.split(":")[1]))
                 epochs.append(e)
                 accuracies.append(acc)
-            plt
             plt.plot(epochs, accuracies, linewidth=3, color=colors[i % len(colors)], label=param)
             plt.xlabel("Epochs")
             plt.ylabel("Accuracy")
-            plt.xticks(npy.arange(0, epochs[-1], step=10))
+            plt.xticks(npy.arange(0, int(epochs[- 1]), step=10))
             plt.legend()
         plt.show()
 
 if __name__ == "__main__":
+    plot_acc(model="obj")
     plot_acc(model="self")

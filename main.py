@@ -24,6 +24,15 @@ from torch.utils.data.sampler import SubsetRandomSampler
 6) Check if other strategies improved the final results
 """
 
+"""
+In order to get a good AUROC, we need a good discriminative model, based on
+the capability to recognize in the target set the rotation applied to images.
+If we overfit on the source set, we might end-up in a situation in which the model does not recognize
+rotation (thus the shape) of target images belonging to a different distribution
+Try to augment transformation in data augmentation which improve the difficulty in recognize the shape
+(such as image distortion)
+"""
+
 def get_args():
     parser = argparse.ArgumentParser(description="Script to launch training",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -41,6 +50,7 @@ def get_args():
     parser.add_argument("--max_scale", default=1.0, type=float, help="Maximum scale percent")
     parser.add_argument("--jitter", default=0.4, type=float, help="Color jitter amount")
     parser.add_argument("--random_grayscale", default=0.1, type=float,help="Randomly greyscale the image")
+    parser.add_argument("--random_blur", default=0.5, type=float,help="Randomly blur the image")
 
     # training parameters
     parser.add_argument("--image_size", type=int, default=222, help="Image size (dimension should be compatible with jigsaw dimension)")
