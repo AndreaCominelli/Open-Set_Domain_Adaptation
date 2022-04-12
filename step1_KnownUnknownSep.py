@@ -32,13 +32,18 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader, w
         running_img_corrects += torch.sum(imgs_preds == lbls.data)
 
         # forward
+        # i pick just one image and its random rotated version and i try to predict the transformation
+        # try to implement multi-rotation classifier
         self_out = feature_extractor(self_imgs)
         if multi_head == 1:
             self_predictions = self_cls[0](torch.cat((self_out, imgs_out), dim=1))
+            # try to implement multi-rotation classifier
+            self_lbls = (lbls * 4) + self_lbls
             self_loss = criterion(self_predictions, self_lbls)
             _, self_preds = torch.max(self_predictions, 1)
             running_self_corrects += torch.sum(self_preds == self_lbls.data)
         else:
+            # warning! implement multi-rotation also for multi-head
             self_loss = 0
             for index,class_l in enumerate(lbls.int()):
                 self_predictions = torch.reshape(self_cls[class_l](torch.cat((self_out[index], imgs_out[index]), dim=0)),(1,4))

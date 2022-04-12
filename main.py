@@ -106,7 +106,9 @@ class Trainer:
         self.obj_cls = Classifier(512,self.args.n_classes_known+1).to(self.device)
 
         self.cls_dict = dict(
-            rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
+            # try to implement multi-rotation classifier ("On the Effectiveness of Image Rotation for Open Set Domain Adaptation")
+            # rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
+            rot_cls = ("rotation", [Classifier(512*2, (self.args.n_classes_known * 4) + 3).to(self.device)]),
             rot_MH_cls = ("rotation", []),
             flip_cls = ("flip", [Classifier(512*2,2).to(self.device)]),
             flip_MH_cls = ("flip", []),
