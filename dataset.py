@@ -187,16 +187,15 @@ class TestDataset(data.Dataset):
 
 """if __name__ == "__main__":
     
-    img_tr = [transforms.Resize((200, 200)), transforms.ToTensor(),
-              transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+    img_tr = [transforms.RandomResizedCrop((int(222), int(222)), (0.8, 1)),
+        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=min(0.5, 0.4)),
+        transforms.RandomGrayscale(0.3), transforms.GaussianBlur(kernel_size=35, sigma=1.5)]
+
     img_transforms = transforms.Compose(img_tr)
     
     names, labels = _dataset_info('txt_list/Art.txt')
     img = Image.open("./data/" + names[0])
     img = img_transforms(img)
 
-    perm_list = get_permutations((3,3), 31)
-    img_self_sup = all_jigsaw(img, 200, (3,3), perm_list)
-
-    plt.imshow(img_self_sup[0])
+    plt.imshow(img)
     plt.show()"""
