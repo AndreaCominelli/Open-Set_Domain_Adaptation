@@ -110,6 +110,15 @@ class Trainer:
             # rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
             rot_cls = ("rotation", [Classifier(512*2, (self.args.n_classes_known * 4) + 3).to(self.device)]),
             rot_MH_cls = ("rotation", []),
+            flip_cls = ("flip", [Classifier(512*2, (self.args.n_classes_known * 2) + 1).to(self.device)]),
+            flip_MH_cls = ("flip", []),
+            jigsaw_cls = ("jigsaw", [Classifier(512*2,args.jigsaw_permutations).to(self.device)])
+        )
+        
+        # for step 2, we must use the original classifiers (the ones without multi-transformation)
+        self.cls_dict_step2 = dict(
+            rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
+            rot_MH_cls = ("rotation", []),
             flip_cls = ("flip", [Classifier(512*2,2).to(self.device)]),
             flip_MH_cls = ("flip", []),
             jigsaw_cls = ("jigsaw", [Classifier(512*2,args.jigsaw_permutations).to(self.device)])

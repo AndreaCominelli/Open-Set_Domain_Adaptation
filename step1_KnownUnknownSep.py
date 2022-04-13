@@ -40,6 +40,8 @@ def _do_epoch(feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, s
             # try to implement multi-rotation classifier
             if self_sup_type == "rotation":
                 self_lbls = (lbls * 4) + self_lbls
+            if self_sup_type == "flip":
+                self_lbls = (lbls * 2) + self_lbls
             self_loss = criterion(self_predictions, self_lbls)
             _, self_preds = torch.max(self_predictions, 1)
             running_self_corrects += torch.sum(self_preds == self_lbls.data)
