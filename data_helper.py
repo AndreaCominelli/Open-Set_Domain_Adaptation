@@ -34,7 +34,7 @@ def get_train_transformers(args):
     if args.random_grayscale:
         img_tr.append(transforms.RandomGrayscale(args.random_grayscale))
     if args.random_blur:
-        img_tr.append(transforms.GaussianBlur(kernel_size=35, sigma=(1, 2)))
+        img_tr.append(transforms.GaussianBlur(kernel_size=35, sigma=args.random_blur))
 
     img_tr = img_tr + [transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
 
