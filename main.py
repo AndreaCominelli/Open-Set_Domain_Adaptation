@@ -51,6 +51,7 @@ def get_args():
     parser.add_argument("--jitter", default=0.4, type=float, help="Color jitter amount")
     parser.add_argument("--random_grayscale", default=0.1, type=float,help="Randomly greyscale the image")
     parser.add_argument("--random_blur", default=1.5, type=float,help="Randomly blur the image")
+    parser.add_argument("--kernel_blur_size", default=21, type=float,help="Set the size of kernel blur")
 
     # training parameters
     parser.add_argument("--image_size", type=int, default=222, help="Image size (dimension should be compatible with jigsaw dimension)")
