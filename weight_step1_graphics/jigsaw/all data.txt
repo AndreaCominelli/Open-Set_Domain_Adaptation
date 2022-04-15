@@ -1,0 +1,1636 @@
+
+Open-Set.ipynb_
+File
+..
+Trascina i file per caricarli nello spazio di archiviazione della sessione
+
+STEP 1
+
+!pwd
+
+Cloning repo if it does not exist. Otherwise, just upddate the local one
+
+Start execution (Rotation classifier)
+
+ !CUDA_LAUNCH_BLOCKING=1 python main.py --jigsaw_permutations 20 --self_sup_task "Jig" --enable_scheduler False --weight_RotTask_step1 8 --epochs_jigsaw_step1 60 --epochs_jigsaw_step2 60 --learning_rate 0.007 --threshold 0.7
+
+import os
+from scipy.stats import loguniform
+from plot_utils import plot_acc
+
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+learning_rates = loguniform.rvs(1e-4, 1e-1, size=5)
+#weight_decays = loguniform.rvs(1e-5, 1e-4, size=5)
+rot_weights = [0.1, 1, 2, 4, 8, 16]
+thresholds = [0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+for w in rot_weights:
+  print(f"Weight: {w}")
+  !CUDA_LAUNCH_BLOCKING=1 python main.py --self_sup_task "Rot" --enable_scheduler False --weight_RotTask_step1 {w} --epochs_rot_step1 80 --epochs_rot_step2 80 --random_blur 0
+plot_acc(model="self")
+plot_acc(model="obj")
+
+Weight: 0.1
+^C
+Weight: 1
+Traceback (most recent call last):
+  File "main.py", line 4, in <module>
+    import torch
+  File "/usr/local/lib/python3.7/dist-packages/torch/__init__.py", line 197, in <module>
+    from torch._C import *  # noqa: F403
+RuntimeError: KeyboardInterrupt: 
+Weight: 2
+Downloading: "https://download.pytorch.org/models/resnet18-f37072fd.pth" to /root/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth
+100% 44.7M/44.7M [00:00<00:00, 323MB/s]
+
+Start execution (Flip classifier)
+
+import os
+from scipy.stats import loguniform
+from plot_utils import plot_acc
+
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+learning_rates = loguniform.rvs(1e-4, 1e-1, size=5)
+#weight_decays = loguniform.rvs(1e-5, 1e-4, size=5)
+rot_weights = [0.1, 1, 2, 4, 8, 16]
+thresholds = [0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+for w in rot_weights:
+  print(f"Weight: {w}")
+  !CUDA_LAUNCH_BLOCKING=1 python main.py --self_sup_task "Flip" --enable_scheduler False --weight_FlipTask_step1 {w} --epochs_flip_step1 80 --epochs_flip_step2 80 --random_blur 0
+plot_acc(model="self")
+plot_acc(model="obj")
+
+Start execution (jigsaw classifier)
+
+Weight: 0.1
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:31,  2.40s/it]
+Obj-Class Loss 3.6618, Obj-Class Accuracy 2.3477, Self_sup Loss 6.0147, Self_sup Accuracy 0.5031
+Epoch:  1
+13it [00:29,  2.25s/it]
+Obj-Class Loss 3.3376, Obj-Class Accuracy 15.3717, Self_sup Loss 6.0120, Self_sup Accuracy 0.6708
+Epoch:  2
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.9013, Obj-Class Accuracy 26.7188, Self_sup Loss 5.9262, Self_sup Accuracy 0.2795
+Epoch:  3
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.6233, Obj-Class Accuracy 35.3270, Self_sup Loss 5.8710, Self_sup Accuracy 0.7826
+Epoch:  4
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.3373, Obj-Class Accuracy 41.6993, Self_sup Loss 5.8827, Self_sup Accuracy 0.5031
+Epoch:  5
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.2721, Obj-Class Accuracy 45.5003, Self_sup Loss 5.9326, Self_sup Accuracy 0.8385
+Epoch:  6
+13it [00:29,  2.26s/it]
+Obj-Class Loss 2.1221, Obj-Class Accuracy 49.6926, Self_sup Loss 5.8766, Self_sup Accuracy 0.5590
+Epoch:  7
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.8920, Obj-Class Accuracy 53.9966, Self_sup Loss 5.8236, Self_sup Accuracy 1.1179
+Epoch:  8
+13it [00:29,  2.28s/it]
+Obj-Class Loss 1.7123, Obj-Class Accuracy 57.3505, Self_sup Loss 5.8083, Self_sup Accuracy 0.7826
+Epoch:  9
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.7902, Obj-Class Accuracy 59.5305, Self_sup Loss 5.8421, Self_sup Accuracy 0.6708
+Epoch:  10
+13it [00:29,  2.27s/it]
+Obj-Class Loss 1.4693, Obj-Class Accuracy 62.3812, Self_sup Loss 5.7136, Self_sup Accuracy 0.8944
+Epoch:  11
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.5065, Obj-Class Accuracy 64.8966, Self_sup Loss 5.6830, Self_sup Accuracy 0.9503
+Epoch:  12
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.3081, Obj-Class Accuracy 66.5176, Self_sup Loss 5.6458, Self_sup Accuracy 0.8944
+Epoch:  13
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.1499, Obj-Class Accuracy 68.6417, Self_sup Loss 5.6198, Self_sup Accuracy 1.1738
+Epoch:  14
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.3287, Obj-Class Accuracy 70.2068, Self_sup Loss 5.8018, Self_sup Accuracy 1.2856
+Epoch:  15
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.0703, Obj-Class Accuracy 71.8837, Self_sup Loss 5.5320, Self_sup Accuracy 1.4533
+Epoch:  16
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.9823, Obj-Class Accuracy 73.6724, Self_sup Loss 5.5839, Self_sup Accuracy 1.0620
+Epoch:  17
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.9884, Obj-Class Accuracy 74.5109, Self_sup Loss 5.6046, Self_sup Accuracy 1.8446
+Epoch:  18
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.8434, Obj-Class Accuracy 76.0760, Self_sup Loss 5.5460, Self_sup Accuracy 1.5651
+Epoch:  19
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.9248, Obj-Class Accuracy 77.5293, Self_sup Loss 5.5375, Self_sup Accuracy 2.0682
+Epoch:  20
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.9411, Obj-Class Accuracy 78.8150, Self_sup Loss 5.6353, Self_sup Accuracy 2.0682
+Epoch:  21
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.6721, Obj-Class Accuracy 79.4857, Self_sup Loss 5.4701, Self_sup Accuracy 2.5713
+Epoch:  22
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.7130, Obj-Class Accuracy 80.4360, Self_sup Loss 5.4593, Self_sup Accuracy 2.3477
+Epoch:  23
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.7781, Obj-Class Accuracy 81.7775, Self_sup Loss 5.4687, Self_sup Accuracy 2.9067
+Epoch:  24
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.6480, Obj-Class Accuracy 82.8396, Self_sup Loss 5.5659, Self_sup Accuracy 2.4595
+Epoch:  25
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.6449, Obj-Class Accuracy 83.7898, Self_sup Loss 5.4937, Self_sup Accuracy 2.3477
+Epoch:  26
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.5816, Obj-Class Accuracy 83.6780, Self_sup Loss 5.3679, Self_sup Accuracy 4.0805
+Epoch:  27
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.6686, Obj-Class Accuracy 84.7401, Self_sup Loss 5.4785, Self_sup Accuracy 2.1241
+Epoch:  28
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.5579, Obj-Class Accuracy 85.0196, Self_sup Loss 5.3470, Self_sup Accuracy 3.0184
+Epoch:  29
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.6362, Obj-Class Accuracy 85.5785, Self_sup Loss 5.4936, Self_sup Accuracy 3.0743
+Epoch:  30
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.5072, Obj-Class Accuracy 86.0816, Self_sup Loss 5.4101, Self_sup Accuracy 3.7451
+Epoch:  31
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.6138, Obj-Class Accuracy 86.1934, Self_sup Loss 5.3161, Self_sup Accuracy 3.8010
+Epoch:  32
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.5469, Obj-Class Accuracy 86.5847, Self_sup Loss 5.2687, Self_sup Accuracy 3.6892
+Epoch:  33
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4810, Obj-Class Accuracy 87.6467, Self_sup Loss 5.3975, Self_sup Accuracy 3.1302
+Epoch:  34
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.4726, Obj-Class Accuracy 87.5349, Self_sup Loss 5.3535, Self_sup Accuracy 3.9687
+Epoch:  35
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.4783, Obj-Class Accuracy 87.4790, Self_sup Loss 5.2327, Self_sup Accuracy 5.4779
+Epoch:  36
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.3752, Obj-Class Accuracy 88.3734, Self_sup Loss 5.1913, Self_sup Accuracy 4.1364
+Epoch:  37
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3576, Obj-Class Accuracy 89.0442, Self_sup Loss 5.3440, Self_sup Accuracy 4.3600
+Epoch:  38
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.3575, Obj-Class Accuracy 89.0442, Self_sup Loss 5.2997, Self_sup Accuracy 4.4718
+Epoch:  39
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4548, Obj-Class Accuracy 88.9883, Self_sup Loss 5.3465, Self_sup Accuracy 3.5774
+Epoch:  40
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.2581, Obj-Class Accuracy 89.2677, Self_sup Loss 5.2247, Self_sup Accuracy 4.6954
+Epoch:  41
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3138, Obj-Class Accuracy 89.5472, Self_sup Loss 5.2860, Self_sup Accuracy 3.9687
+Epoch:  42
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.3777, Obj-Class Accuracy 89.7149, Self_sup Loss 5.2120, Self_sup Accuracy 5.3661
+Epoch:  43
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2904, Obj-Class Accuracy 89.7708, Self_sup Loss 5.1513, Self_sup Accuracy 4.4159
+Epoch:  44
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.2985, Obj-Class Accuracy 90.2180, Self_sup Loss 5.1275, Self_sup Accuracy 4.7513
+Epoch:  45
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.3207, Obj-Class Accuracy 90.7770, Self_sup Loss 5.2584, Self_sup Accuracy 5.1984
+Epoch:  46
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2709, Obj-Class Accuracy 90.2739, Self_sup Loss 5.2150, Self_sup Accuracy 6.0928
+Epoch:  47
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2263, Obj-Class Accuracy 91.0565, Self_sup Loss 5.0002, Self_sup Accuracy 4.4159
+Epoch:  48
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1896, Obj-Class Accuracy 90.7770, Self_sup Loss 5.1340, Self_sup Accuracy 5.6456
+Epoch:  49
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2588, Obj-Class Accuracy 90.3857, Self_sup Loss 5.1218, Self_sup Accuracy 5.1425
+Epoch:  50
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.2647, Obj-Class Accuracy 91.0565, Self_sup Loss 5.0973, Self_sup Accuracy 5.7015
+Epoch:  51
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1787, Obj-Class Accuracy 91.1683, Self_sup Loss 4.9956, Self_sup Accuracy 6.0369
+Epoch:  52
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2344, Obj-Class Accuracy 91.3918, Self_sup Loss 5.0013, Self_sup Accuracy 5.5897
+Epoch:  53
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1832, Obj-Class Accuracy 91.5595, Self_sup Loss 4.8884, Self_sup Accuracy 5.9251
+Epoch:  54
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.2280, Obj-Class Accuracy 91.7272, Self_sup Loss 4.9525, Self_sup Accuracy 5.6456
+Epoch:  55
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2625, Obj-Class Accuracy 91.0565, Self_sup Loss 5.0095, Self_sup Accuracy 6.6518
+Epoch:  56
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2078, Obj-Class Accuracy 91.5595, Self_sup Loss 4.8290, Self_sup Accuracy 5.9810
+Epoch:  57
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1857, Obj-Class Accuracy 91.4477, Self_sup Loss 4.9167, Self_sup Accuracy 6.4282
+Epoch:  58
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1888, Obj-Class Accuracy 91.6154, Self_sup Loss 4.7831, Self_sup Accuracy 7.0989
+Epoch:  59
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1780, Obj-Class Accuracy 91.8949, Self_sup Loss 5.0161, Self_sup Accuracy 7.0430
+Epoch:  60
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1676, Obj-Class Accuracy 91.7272, Self_sup Loss 4.7538, Self_sup Accuracy 6.3164
+Epoch:  61
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1451, Obj-Class Accuracy 91.9508, Self_sup Loss 4.8713, Self_sup Accuracy 6.6518
+Epoch:  62
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1637, Obj-Class Accuracy 91.8390, Self_sup Loss 4.8501, Self_sup Accuracy 6.1487
+Epoch:  63
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1955, Obj-Class Accuracy 92.0067, Self_sup Loss 4.9344, Self_sup Accuracy 5.7574
+Epoch:  64
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1366, Obj-Class Accuracy 92.2862, Self_sup Loss 4.8591, Self_sup Accuracy 7.2107
+Epoch:  65
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1590, Obj-Class Accuracy 91.9508, Self_sup Loss 4.9081, Self_sup Accuracy 7.2666
+Epoch:  66
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1836, Obj-Class Accuracy 91.7272, Self_sup Loss 4.9079, Self_sup Accuracy 6.5959
+Epoch:  67
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1382, Obj-Class Accuracy 91.9508, Self_sup Loss 4.8859, Self_sup Accuracy 7.3225
+Epoch:  68
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.1372, Obj-Class Accuracy 92.1185, Self_sup Loss 4.9411, Self_sup Accuracy 5.9251
+Epoch:  69
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1758, Obj-Class Accuracy 92.1744, Self_sup Loss 4.9836, Self_sup Accuracy 7.0989
+Epoch:  70
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1784, Obj-Class Accuracy 92.1744, Self_sup Loss 4.8626, Self_sup Accuracy 6.5400
+Epoch:  71
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1659, Obj-Class Accuracy 92.1185, Self_sup Loss 4.9372, Self_sup Accuracy 6.5400
+Epoch:  72
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.1444, Obj-Class Accuracy 91.6154, Self_sup Loss 4.8197, Self_sup Accuracy 6.2046
+Epoch:  73
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1517, Obj-Class Accuracy 92.0626, Self_sup Loss 4.8338, Self_sup Accuracy 7.0430
+Epoch:  74
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1489, Obj-Class Accuracy 92.0626, Self_sup Loss 4.8489, Self_sup Accuracy 6.0369
+Epoch:  75
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1552, Obj-Class Accuracy 92.2862, Self_sup Loss 4.8792, Self_sup Accuracy 6.3723
+Epoch:  76
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1715, Obj-Class Accuracy 92.0626, Self_sup Loss 4.8859, Self_sup Accuracy 6.7636
+Epoch:  77
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1995, Obj-Class Accuracy 92.3421, Self_sup Loss 4.9050, Self_sup Accuracy 6.9312
+Epoch:  78
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1601, Obj-Class Accuracy 92.0067, Self_sup Loss 4.7050, Self_sup Accuracy 7.1548
+Epoch:  79
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1474, Obj-Class Accuracy 91.8949, Self_sup Loss 4.8563, Self_sup Accuracy 7.8815
+Target - Evaluation -- for known/unknown separation
+4365it [03:48, 19.12it/s]
+normality_scores samples: [0.03132337471470237, 0.03791127959266305, 0.02164132264442742, 0.040372800547629595, 0.015127760940231383] [0.017035995377227664, 0.02071085083298385, 0.026302504586055875, 0.01819794625043869, 0.015628402237780392]
+ground_truth samples: [1, 1, 1, 1, 1] [0, 0, 0, 0, 0]
+AUROC 0.5694
+Generated random number is : 53480
+The number of target samples selected as known is:  0
+The number of target samples selected as unknown is:  4365
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Traceback (most recent call last):
+  File "main.py", line 243, in <module>
+    main()
+  File "main.py", line 233, in main
+    trainer.do_training("jigsaw_cls")
+  File "main.py", line 215, in do_training
+    self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
+  File "/content/Open-Set/data_helper.py", line 13, in get_train_dataloader
+    loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
+  File "/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py", line 268, in __init__
+    sampler = RandomSampler(dataset, generator=generator)
+  File "/usr/local/lib/python3.7/dist-packages/torch/utils/data/sampler.py", line 103, in __init__
+    "value, but got num_samples={}".format(self.num_samples))
+ValueError: num_samples should be a positive integer value, but got num_samples=0
+Weight: 1
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:29,  2.29s/it]
+Obj-Class Loss 3.7591, Obj-Class Accuracy 3.2979, Self_sup Loss 5.9383, Self_sup Accuracy 0.1118
+Epoch:  1
+13it [00:29,  2.27s/it]
+Obj-Class Loss 3.4382, Obj-Class Accuracy 11.0676, Self_sup Loss 5.8456, Self_sup Accuracy 0.6708
+Epoch:  2
+13it [00:29,  2.24s/it]
+Obj-Class Loss 3.0535, Obj-Class Accuracy 23.8122, Self_sup Loss 5.5814, Self_sup Accuracy 1.1179
+Epoch:  3
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.7896, Obj-Class Accuracy 33.5383, Self_sup Loss 5.5106, Self_sup Accuracy 1.8446
+Epoch:  4
+13it [00:29,  2.24s/it]
+Obj-Class Loss 2.5554, Obj-Class Accuracy 40.6372, Self_sup Loss 5.4035, Self_sup Accuracy 2.6831
+Epoch:  5
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.2620, Obj-Class Accuracy 45.4444, Self_sup Loss 5.3404, Self_sup Accuracy 3.6333
+Epoch:  6
+13it [00:29,  2.24s/it]
+Obj-Class Loss 2.1450, Obj-Class Accuracy 49.9721, Self_sup Loss 5.1975, Self_sup Accuracy 4.0246
+Epoch:  7
+13it [00:28,  2.23s/it]
+Obj-Class Loss 1.9463, Obj-Class Accuracy 52.6551, Self_sup Loss 5.0380, Self_sup Accuracy 4.8631
+Epoch:  8
+13it [00:28,  2.22s/it]
+Obj-Class Loss 1.9220, Obj-Class Accuracy 55.3382, Self_sup Loss 5.0898, Self_sup Accuracy 6.0369
+Epoch:  9
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.6791, Obj-Class Accuracy 58.5802, Self_sup Loss 4.8208, Self_sup Accuracy 6.0928
+Epoch:  10
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.5091, Obj-Class Accuracy 61.0397, Self_sup Loss 4.6268, Self_sup Accuracy 5.0307
+Epoch:  11
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.4689, Obj-Class Accuracy 62.7725, Self_sup Loss 4.6832, Self_sup Accuracy 5.9251
+Epoch:  12
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.3112, Obj-Class Accuracy 64.0581, Self_sup Loss 4.5150, Self_sup Accuracy 6.4282
+Epoch:  13
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.2701, Obj-Class Accuracy 66.1263, Self_sup Loss 4.4159, Self_sup Accuracy 7.8815
+Epoch:  14
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.1679, Obj-Class Accuracy 67.4120, Self_sup Loss 4.3557, Self_sup Accuracy 8.9435
+Epoch:  15
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.2171, Obj-Class Accuracy 69.5361, Self_sup Loss 4.3654, Self_sup Accuracy 8.2728
+Epoch:  16
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.2222, Obj-Class Accuracy 70.8776, Self_sup Loss 4.2897, Self_sup Accuracy 8.8876
+Epoch:  17
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.0341, Obj-Class Accuracy 71.2689, Self_sup Loss 4.1594, Self_sup Accuracy 8.4964
+Epoch:  18
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.1369, Obj-Class Accuracy 73.6724, Self_sup Loss 4.3570, Self_sup Accuracy 10.9558
+Epoch:  19
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.0406, Obj-Class Accuracy 74.9022, Self_sup Loss 4.0897, Self_sup Accuracy 11.4030
+Epoch:  20
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.9629, Obj-Class Accuracy 75.9083, Self_sup Loss 4.0216, Self_sup Accuracy 9.8938
+Epoch:  21
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.8063, Obj-Class Accuracy 77.9765, Self_sup Loss 3.8949, Self_sup Accuracy 12.0179
+Epoch:  22
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.8241, Obj-Class Accuracy 78.1442, Self_sup Loss 3.8727, Self_sup Accuracy 12.2974
+Epoch:  23
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.7470, Obj-Class Accuracy 79.5975, Self_sup Loss 3.9018, Self_sup Accuracy 12.3533
+Epoch:  24
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.6695, Obj-Class Accuracy 79.6534, Self_sup Loss 3.6886, Self_sup Accuracy 13.0799
+Epoch:  25
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.7097, Obj-Class Accuracy 80.4360, Self_sup Loss 3.6450, Self_sup Accuracy 12.5210
+Epoch:  26
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.7254, Obj-Class Accuracy 80.9950, Self_sup Loss 3.5891, Self_sup Accuracy 12.9122
+Epoch:  27
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.5869, Obj-Class Accuracy 82.1688, Self_sup Loss 3.4674, Self_sup Accuracy 14.4215
+Epoch:  28
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.5973, Obj-Class Accuracy 84.2370, Self_sup Loss 3.5178, Self_sup Accuracy 15.2599
+Epoch:  29
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4513, Obj-Class Accuracy 83.6780, Self_sup Loss 3.2798, Self_sup Accuracy 14.5892
+Epoch:  30
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.4649, Obj-Class Accuracy 84.5724, Self_sup Loss 3.2332, Self_sup Accuracy 16.8250
+Epoch:  31
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.5255, Obj-Class Accuracy 84.5165, Self_sup Loss 3.4328, Self_sup Accuracy 16.3220
+Epoch:  32
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.5108, Obj-Class Accuracy 85.3549, Self_sup Loss 3.3647, Self_sup Accuracy 15.2040
+Epoch:  33
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.4194, Obj-Class Accuracy 85.8021, Self_sup Loss 3.1843, Self_sup Accuracy 17.8871
+Epoch:  34
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.5232, Obj-Class Accuracy 85.9698, Self_sup Loss 3.3921, Self_sup Accuracy 16.4338
+Epoch:  35
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3634, Obj-Class Accuracy 86.1375, Self_sup Loss 3.0930, Self_sup Accuracy 17.2163
+Epoch:  36
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4385, Obj-Class Accuracy 87.2554, Self_sup Loss 3.0634, Self_sup Accuracy 18.5579
+Epoch:  37
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.3504, Obj-Class Accuracy 87.0319, Self_sup Loss 3.0421, Self_sup Accuracy 18.3343
+Epoch:  38
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3492, Obj-Class Accuracy 87.7026, Self_sup Loss 3.0246, Self_sup Accuracy 20.2907
+Epoch:  39
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3539, Obj-Class Accuracy 88.4852, Self_sup Loss 3.0173, Self_sup Accuracy 21.1850
+Epoch:  40
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3507, Obj-Class Accuracy 87.8703, Self_sup Loss 3.0105, Self_sup Accuracy 20.6260
+Epoch:  41
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2349, Obj-Class Accuracy 88.3734, Self_sup Loss 2.7492, Self_sup Accuracy 20.3466
+Epoch:  42
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.2782, Obj-Class Accuracy 88.7088, Self_sup Loss 2.8382, Self_sup Accuracy 20.4025
+Epoch:  43
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.2274, Obj-Class Accuracy 89.6031, Self_sup Loss 2.7324, Self_sup Accuracy 21.5763
+Epoch:  44
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3191, Obj-Class Accuracy 89.3236, Self_sup Loss 3.0019, Self_sup Accuracy 22.2471
+Epoch:  45
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3527, Obj-Class Accuracy 89.2119, Self_sup Loss 2.9765, Self_sup Accuracy 22.3030
+Epoch:  46
+13it [00:28,  2.22s/it]
+Obj-Class Loss 0.1659, Obj-Class Accuracy 90.1621, Self_sup Loss 2.5019, Self_sup Accuracy 23.0296
+Epoch:  47
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2478, Obj-Class Accuracy 90.6093, Self_sup Loss 2.7516, Self_sup Accuracy 23.3650
+Epoch:  48
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2614, Obj-Class Accuracy 89.6590, Self_sup Loss 2.6702, Self_sup Accuracy 25.0419
+Epoch:  49
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.2470, Obj-Class Accuracy 90.3298, Self_sup Loss 2.7547, Self_sup Accuracy 26.6070
+Epoch:  50
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2665, Obj-Class Accuracy 90.6652, Self_sup Loss 2.6648, Self_sup Accuracy 25.2655
+Epoch:  51
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2235, Obj-Class Accuracy 90.8888, Self_sup Loss 2.5932, Self_sup Accuracy 26.1599
+Epoch:  52
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2084, Obj-Class Accuracy 90.4975, Self_sup Loss 2.5502, Self_sup Accuracy 27.0542
+Epoch:  53
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2164, Obj-Class Accuracy 91.0565, Self_sup Loss 2.6343, Self_sup Accuracy 26.0481
+Epoch:  54
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1523, Obj-Class Accuracy 90.7211, Self_sup Loss 2.5553, Self_sup Accuracy 24.7624
+Epoch:  55
+13it [00:28,  2.22s/it]
+Obj-Class Loss 0.1938, Obj-Class Accuracy 90.8888, Self_sup Loss 2.5760, Self_sup Accuracy 26.2158
+Epoch:  56
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1800, Obj-Class Accuracy 91.2800, Self_sup Loss 2.5159, Self_sup Accuracy 28.1163
+Epoch:  57
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1825, Obj-Class Accuracy 91.1124, Self_sup Loss 2.5783, Self_sup Accuracy 27.7809
+Epoch:  58
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1601, Obj-Class Accuracy 91.6154, Self_sup Loss 2.4504, Self_sup Accuracy 28.0604
+Epoch:  59
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1836, Obj-Class Accuracy 91.7272, Self_sup Loss 2.4448, Self_sup Accuracy 27.3337
+Epoch:  60
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1504, Obj-Class Accuracy 91.2800, Self_sup Loss 2.5077, Self_sup Accuracy 28.8988
+Epoch:  61
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2131, Obj-Class Accuracy 91.7272, Self_sup Loss 2.5680, Self_sup Accuracy 30.3522
+Epoch:  62
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1425, Obj-Class Accuracy 92.0626, Self_sup Loss 2.3089, Self_sup Accuracy 30.7434
+Epoch:  63
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1252, Obj-Class Accuracy 91.8949, Self_sup Loss 2.2022, Self_sup Accuracy 31.5260
+Epoch:  64
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1170, Obj-Class Accuracy 91.8949, Self_sup Loss 2.3044, Self_sup Accuracy 31.7496
+Epoch:  65
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.1351, Obj-Class Accuracy 92.0067, Self_sup Loss 2.3752, Self_sup Accuracy 31.5260
+Epoch:  66
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1570, Obj-Class Accuracy 92.0067, Self_sup Loss 2.3980, Self_sup Accuracy 32.8675
+Epoch:  67
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1604, Obj-Class Accuracy 92.1744, Self_sup Loss 2.3929, Self_sup Accuracy 32.1409
+Epoch:  68
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.1573, Obj-Class Accuracy 92.3980, Self_sup Loss 2.3198, Self_sup Accuracy 31.3583
+Epoch:  69
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0884, Obj-Class Accuracy 92.1744, Self_sup Loss 2.2258, Self_sup Accuracy 31.8614
+Epoch:  70
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1496, Obj-Class Accuracy 91.8949, Self_sup Loss 2.3150, Self_sup Accuracy 32.7557
+Epoch:  71
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1459, Obj-Class Accuracy 91.8390, Self_sup Loss 2.3481, Self_sup Accuracy 31.8055
+Epoch:  72
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1012, Obj-Class Accuracy 92.0626, Self_sup Loss 2.3034, Self_sup Accuracy 30.9111
+Epoch:  73
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1148, Obj-Class Accuracy 92.0067, Self_sup Loss 2.1042, Self_sup Accuracy 33.2588
+Epoch:  74
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1085, Obj-Class Accuracy 92.2862, Self_sup Loss 2.2706, Self_sup Accuracy 34.3767
+Epoch:  75
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1187, Obj-Class Accuracy 91.9508, Self_sup Loss 2.2276, Self_sup Accuracy 32.6439
+Epoch:  76
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1372, Obj-Class Accuracy 92.0626, Self_sup Loss 2.3457, Self_sup Accuracy 33.3706
+Epoch:  77
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1251, Obj-Class Accuracy 92.1744, Self_sup Loss 2.1636, Self_sup Accuracy 33.7060
+Epoch:  78
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1303, Obj-Class Accuracy 92.0067, Self_sup Loss 2.1633, Self_sup Accuracy 35.2711
+Epoch:  79
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1196, Obj-Class Accuracy 92.1744, Self_sup Loss 2.3486, Self_sup Accuracy 34.4326
+Target - Evaluation -- for known/unknown separation
+4365it [03:52, 18.75it/s]
+normality_scores samples: [0.1921678390353918, 0.11116170138120651, 0.08774915710091591, 0.17093466967344284, 0.029534692410379648] [0.03775078407488763, 0.05442695948295295, 0.10072627943009138, 0.11700524855405092, 0.07106990925967693]
+ground_truth samples: [1, 1, 1, 1, 1] [0, 0, 0, 0, 0]
+AUROC 0.6352
+Generated random number is : 25699
+The number of target samples selected as known is:  0
+The number of target samples selected as unknown is:  4365
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Traceback (most recent call last):
+  File "main.py", line 243, in <module>
+    main()
+  File "main.py", line 233, in main
+    trainer.do_training("jigsaw_cls")
+  File "main.py", line 215, in do_training
+    self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
+  File "/content/Open-Set/data_helper.py", line 13, in get_train_dataloader
+    loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
+  File "/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py", line 268, in __init__
+    sampler = RandomSampler(dataset, generator=generator)
+  File "/usr/local/lib/python3.7/dist-packages/torch/utils/data/sampler.py", line 103, in __init__
+    "value, but got num_samples={}".format(self.num_samples))
+ValueError: num_samples should be a positive integer value, but got num_samples=0
+Weight: 2
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:29,  2.30s/it]
+Obj-Class Loss 3.7654, Obj-Class Accuracy 4.8631, Self_sup Loss 5.8544, Self_sup Accuracy 0.8385
+Epoch:  1
+13it [00:29,  2.27s/it]
+Obj-Class Loss 3.3221, Obj-Class Accuracy 15.5953, Self_sup Loss 5.5775, Self_sup Accuracy 1.6210
+Epoch:  2
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.9905, Obj-Class Accuracy 23.9799, Self_sup Loss 5.3933, Self_sup Accuracy 2.6831
+Epoch:  3
+13it [00:29,  2.28s/it]
+Obj-Class Loss 2.5477, Obj-Class Accuracy 33.9296, Self_sup Loss 5.1316, Self_sup Accuracy 3.9687
+Epoch:  4
+13it [00:29,  2.24s/it]
+Obj-Class Loss 2.4385, Obj-Class Accuracy 41.2521, Self_sup Loss 5.0131, Self_sup Accuracy 4.7513
+Epoch:  5
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.3139, Obj-Class Accuracy 46.0034, Self_sup Loss 4.8756, Self_sup Accuracy 4.9189
+Epoch:  6
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.9026, Obj-Class Accuracy 49.3013, Self_sup Loss 4.6348, Self_sup Accuracy 6.2605
+Epoch:  7
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.9042, Obj-Class Accuracy 52.0961, Self_sup Loss 4.5355, Self_sup Accuracy 7.4902
+Epoch:  8
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.9850, Obj-Class Accuracy 54.9469, Self_sup Loss 4.5667, Self_sup Accuracy 8.0492
+Epoch:  9
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.6730, Obj-Class Accuracy 57.3505, Self_sup Loss 4.4135, Self_sup Accuracy 8.1051
+Epoch:  10
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.4941, Obj-Class Accuracy 60.6484, Self_sup Loss 4.1023, Self_sup Accuracy 7.8815
+Epoch:  11
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.4147, Obj-Class Accuracy 61.1515, Self_sup Loss 4.0868, Self_sup Accuracy 9.5025
+Epoch:  12
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.4362, Obj-Class Accuracy 63.7228, Self_sup Loss 4.1235, Self_sup Accuracy 9.9497
+Epoch:  13
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.3141, Obj-Class Accuracy 66.4617, Self_sup Loss 3.9067, Self_sup Accuracy 11.4030
+Epoch:  14
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.2637, Obj-Class Accuracy 68.6417, Self_sup Loss 3.8048, Self_sup Accuracy 11.9620
+Epoch:  15
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.0658, Obj-Class Accuracy 71.1571, Self_sup Loss 3.6142, Self_sup Accuracy 13.0240
+Epoch:  16
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.1205, Obj-Class Accuracy 71.1012, Self_sup Loss 3.6367, Self_sup Accuracy 13.9184
+Epoch:  17
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.2366, Obj-Class Accuracy 74.3432, Self_sup Loss 3.7413, Self_sup Accuracy 15.3717
+Epoch:  18
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.8045, Obj-Class Accuracy 74.3991, Self_sup Loss 3.2961, Self_sup Accuracy 14.9245
+Epoch:  19
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.9311, Obj-Class Accuracy 76.2996, Self_sup Loss 3.3296, Self_sup Accuracy 17.7194
+Epoch:  20
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.9023, Obj-Class Accuracy 77.5852, Self_sup Loss 3.3505, Self_sup Accuracy 15.9307
+Epoch:  21
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.8016, Obj-Class Accuracy 79.7652, Self_sup Loss 3.1561, Self_sup Accuracy 17.7194
+Epoch:  22
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.7482, Obj-Class Accuracy 80.1565, Self_sup Loss 3.1608, Self_sup Accuracy 17.9989
+Epoch:  23
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.6995, Obj-Class Accuracy 81.4980, Self_sup Loss 3.1163, Self_sup Accuracy 19.6199
+Epoch:  24
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.7009, Obj-Class Accuracy 81.8893, Self_sup Loss 3.0628, Self_sup Accuracy 17.9989
+Epoch:  25
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.6699, Obj-Class Accuracy 82.1688, Self_sup Loss 2.9127, Self_sup Accuracy 19.6199
+Epoch:  26
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.5446, Obj-Class Accuracy 83.0632, Self_sup Loss 2.9153, Self_sup Accuracy 20.1230
+Epoch:  27
+13it [00:28,  2.22s/it]
+Obj-Class Loss 0.6214, Obj-Class Accuracy 84.4047, Self_sup Loss 2.8885, Self_sup Accuracy 24.5388
+Epoch:  28
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.5210, Obj-Class Accuracy 84.6283, Self_sup Loss 2.8515, Self_sup Accuracy 21.9676
+Epoch:  29
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.5600, Obj-Class Accuracy 84.9637, Self_sup Loss 2.8256, Self_sup Accuracy 23.7563
+Epoch:  30
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.4453, Obj-Class Accuracy 86.1934, Self_sup Loss 2.5717, Self_sup Accuracy 24.4271
+Epoch:  31
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.3993, Obj-Class Accuracy 86.7524, Self_sup Loss 2.4982, Self_sup Accuracy 25.3214
+Epoch:  32
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.4572, Obj-Class Accuracy 87.0319, Self_sup Loss 2.6402, Self_sup Accuracy 26.6070
+Epoch:  33
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.4020, Obj-Class Accuracy 86.6965, Self_sup Loss 2.5830, Self_sup Accuracy 27.7809
+Epoch:  34
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.3242, Obj-Class Accuracy 88.0939, Self_sup Loss 2.3574, Self_sup Accuracy 29.5696
+Epoch:  35
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3591, Obj-Class Accuracy 87.5908, Self_sup Loss 2.4346, Self_sup Accuracy 31.1347
+Epoch:  36
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4125, Obj-Class Accuracy 88.7647, Self_sup Loss 2.5022, Self_sup Accuracy 30.5198
+Epoch:  37
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2825, Obj-Class Accuracy 88.6529, Self_sup Loss 2.3241, Self_sup Accuracy 30.4639
+Epoch:  38
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2284, Obj-Class Accuracy 88.9883, Self_sup Loss 2.0929, Self_sup Accuracy 34.3767
+Epoch:  39
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2354, Obj-Class Accuracy 89.6031, Self_sup Loss 2.3120, Self_sup Accuracy 32.3086
+Epoch:  40
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3011, Obj-Class Accuracy 89.7708, Self_sup Loss 2.2768, Self_sup Accuracy 33.9855
+Epoch:  41
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2471, Obj-Class Accuracy 90.1621, Self_sup Loss 2.0425, Self_sup Accuracy 34.2091
+Epoch:  42
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2478, Obj-Class Accuracy 90.0503, Self_sup Loss 2.0545, Self_sup Accuracy 34.8798
+Epoch:  43
+13it [00:28,  2.23s/it]
+Obj-Class Loss 0.2608, Obj-Class Accuracy 90.1062, Self_sup Loss 2.0883, Self_sup Accuracy 38.8485
+Epoch:  44
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2596, Obj-Class Accuracy 90.7770, Self_sup Loss 2.2062, Self_sup Accuracy 38.4013
+Epoch:  45
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1889, Obj-Class Accuracy 90.6093, Self_sup Loss 1.9697, Self_sup Accuracy 37.6188
+Epoch:  46
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1983, Obj-Class Accuracy 90.9447, Self_sup Loss 2.0045, Self_sup Accuracy 41.3639
+Epoch:  47
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2474, Obj-Class Accuracy 90.8888, Self_sup Loss 1.9701, Self_sup Accuracy 42.7054
+Epoch:  48
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1620, Obj-Class Accuracy 90.7770, Self_sup Loss 1.8175, Self_sup Accuracy 42.5377
+Epoch:  49
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1667, Obj-Class Accuracy 91.3359, Self_sup Loss 1.7591, Self_sup Accuracy 43.9352
+Epoch:  50
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1523, Obj-Class Accuracy 91.3918, Self_sup Loss 1.6984, Self_sup Accuracy 45.6121
+Epoch:  51
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1731, Obj-Class Accuracy 91.4477, Self_sup Loss 1.8033, Self_sup Accuracy 46.2828
+Epoch:  52
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.1550, Obj-Class Accuracy 91.5036, Self_sup Loss 1.8653, Self_sup Accuracy 47.4008
+Epoch:  53
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1447, Obj-Class Accuracy 91.8949, Self_sup Loss 1.6855, Self_sup Accuracy 48.0715
+Epoch:  54
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1055, Obj-Class Accuracy 91.7272, Self_sup Loss 1.6136, Self_sup Accuracy 50.5869
+Epoch:  55
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1402, Obj-Class Accuracy 91.6154, Self_sup Loss 1.6718, Self_sup Accuracy 50.1956
+Epoch:  56
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1623, Obj-Class Accuracy 91.7831, Self_sup Loss 1.6752, Self_sup Accuracy 53.4936
+Epoch:  57
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1391, Obj-Class Accuracy 92.1744, Self_sup Loss 1.4888, Self_sup Accuracy 54.8910
+Epoch:  58
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1196, Obj-Class Accuracy 91.7831, Self_sup Loss 1.5337, Self_sup Accuracy 56.7915
+Epoch:  59
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1451, Obj-Class Accuracy 92.4539, Self_sup Loss 1.5823, Self_sup Accuracy 56.9033
+Epoch:  60
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1050, Obj-Class Accuracy 92.0626, Self_sup Loss 1.4331, Self_sup Accuracy 56.6797
+Epoch:  61
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1245, Obj-Class Accuracy 91.8390, Self_sup Loss 1.4820, Self_sup Accuracy 56.5120
+Epoch:  62
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0909, Obj-Class Accuracy 92.0067, Self_sup Loss 1.4093, Self_sup Accuracy 58.5802
+Epoch:  63
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1093, Obj-Class Accuracy 92.5098, Self_sup Loss 1.5231, Self_sup Accuracy 60.9279
+Epoch:  64
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0984, Obj-Class Accuracy 92.2303, Self_sup Loss 1.3740, Self_sup Accuracy 60.9838
+Epoch:  65
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1049, Obj-Class Accuracy 92.2862, Self_sup Loss 1.2946, Self_sup Accuracy 63.2756
+Epoch:  66
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0759, Obj-Class Accuracy 92.3421, Self_sup Loss 1.2581, Self_sup Accuracy 61.3192
+Epoch:  67
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1002, Obj-Class Accuracy 92.5098, Self_sup Loss 1.2669, Self_sup Accuracy 63.1079
+Epoch:  68
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.1270, Obj-Class Accuracy 92.2862, Self_sup Loss 1.3852, Self_sup Accuracy 63.2197
+Epoch:  69
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0879, Obj-Class Accuracy 92.3980, Self_sup Loss 1.3288, Self_sup Accuracy 63.5551
+Epoch:  70
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1111, Obj-Class Accuracy 92.2862, Self_sup Loss 1.2342, Self_sup Accuracy 64.3935
+Epoch:  71
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0971, Obj-Class Accuracy 92.3980, Self_sup Loss 1.4261, Self_sup Accuracy 65.3438
+Epoch:  72
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1116, Obj-Class Accuracy 92.3421, Self_sup Loss 1.3526, Self_sup Accuracy 64.5612
+Epoch:  73
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1329, Obj-Class Accuracy 92.4539, Self_sup Loss 1.3419, Self_sup Accuracy 65.2879
+Epoch:  74
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0898, Obj-Class Accuracy 92.2862, Self_sup Loss 1.2480, Self_sup Accuracy 65.5674
+Epoch:  75
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0947, Obj-Class Accuracy 92.3980, Self_sup Loss 1.2982, Self_sup Accuracy 65.9586
+Epoch:  76
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0936, Obj-Class Accuracy 92.2303, Self_sup Loss 1.2572, Self_sup Accuracy 65.8468
+Epoch:  77
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0796, Obj-Class Accuracy 92.2303, Self_sup Loss 1.3124, Self_sup Accuracy 67.4679
+Epoch:  78
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0959, Obj-Class Accuracy 92.5657, Self_sup Loss 1.2670, Self_sup Accuracy 67.9150
+Epoch:  79
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0805, Obj-Class Accuracy 92.5657, Self_sup Loss 1.2462, Self_sup Accuracy 66.2940
+Target - Evaluation -- for known/unknown separation
+4365it [03:48, 19.08it/s]
+normality_scores samples: [0.08892343379557133, 0.3117772117257118, 0.235883891582489, 0.2654688209295273, 0.06841761898249388] [0.056404472794383764, 0.07073640916496515, 0.10481797438114882, 0.20453018322587013, 0.11319908127188683]
+ground_truth samples: [1, 1, 1, 1, 1] [0, 0, 0, 0, 0]
+AUROC 0.6327
+Generated random number is : 38078
+The number of target samples selected as known is:  8
+The number of target samples selected as unknown is:  4357
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Weight: 4
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:29,  2.28s/it]
+Obj-Class Loss 3.7300, Obj-Class Accuracy 2.3477, Self_sup Loss 5.7909, Self_sup Accuracy 0.9503
+Epoch:  1
+13it [00:29,  2.24s/it]
+Obj-Class Loss 3.3755, Obj-Class Accuracy 12.7446, Self_sup Loss 5.4632, Self_sup Accuracy 2.2918
+Epoch:  2
+13it [00:29,  2.24s/it]
+Obj-Class Loss 2.8518, Obj-Class Accuracy 24.4830, Self_sup Loss 5.0799, Self_sup Accuracy 4.2482
+Epoch:  3
+13it [00:29,  2.24s/it]
+Obj-Class Loss 2.6133, Obj-Class Accuracy 34.2650, Self_sup Loss 4.9001, Self_sup Accuracy 5.7574
+Epoch:  4
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.2767, Obj-Class Accuracy 42.6495, Self_sup Loss 4.3849, Self_sup Accuracy 8.4405
+Epoch:  5
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.9978, Obj-Class Accuracy 47.7921, Self_sup Loss 4.1389, Self_sup Accuracy 9.7261
+Epoch:  6
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.7885, Obj-Class Accuracy 52.2079, Self_sup Loss 3.9897, Self_sup Accuracy 12.2415
+Epoch:  7
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.6937, Obj-Class Accuracy 57.5182, Self_sup Loss 3.8209, Self_sup Accuracy 12.9681
+Epoch:  8
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.5772, Obj-Class Accuracy 58.9715, Self_sup Loss 3.7758, Self_sup Accuracy 14.0861
+Epoch:  9
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.5836, Obj-Class Accuracy 61.8222, Self_sup Loss 3.6426, Self_sup Accuracy 16.4897
+Epoch:  10
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.3322, Obj-Class Accuracy 65.7909, Self_sup Loss 3.3868, Self_sup Accuracy 16.4897
+Epoch:  11
+13it [00:29,  2.27s/it]
+Obj-Class Loss 1.3171, Obj-Class Accuracy 68.5299, Self_sup Loss 3.3957, Self_sup Accuracy 19.9553
+Epoch:  12
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.0866, Obj-Class Accuracy 69.2007, Self_sup Loss 2.9526, Self_sup Accuracy 18.7255
+Epoch:  13
+13it [00:29,  2.23s/it]
+Obj-Class Loss 1.0348, Obj-Class Accuracy 73.0576, Self_sup Loss 2.8884, Self_sup Accuracy 21.8558
+Epoch:  14
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.0537, Obj-Class Accuracy 74.3991, Self_sup Loss 2.9790, Self_sup Accuracy 24.2594
+Epoch:  15
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.8169, Obj-Class Accuracy 77.2499, Self_sup Loss 2.5815, Self_sup Accuracy 27.5573
+Epoch:  16
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.7850, Obj-Class Accuracy 77.5293, Self_sup Loss 2.5455, Self_sup Accuracy 29.5137
+Epoch:  17
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.7395, Obj-Class Accuracy 79.4857, Self_sup Loss 2.4206, Self_sup Accuracy 32.4203
+Epoch:  18
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.6083, Obj-Class Accuracy 79.9888, Self_sup Loss 2.3478, Self_sup Accuracy 32.5880
+Epoch:  19
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.6956, Obj-Class Accuracy 82.2806, Self_sup Loss 2.3257, Self_sup Accuracy 36.1096
+Epoch:  20
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.6336, Obj-Class Accuracy 83.2309, Self_sup Loss 2.3231, Self_sup Accuracy 33.6501
+Epoch:  21
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.6263, Obj-Class Accuracy 84.6283, Self_sup Loss 2.1853, Self_sup Accuracy 38.1778
+Epoch:  22
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.5369, Obj-Class Accuracy 85.6344, Self_sup Loss 1.9995, Self_sup Accuracy 41.0285
+Epoch:  23
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.5384, Obj-Class Accuracy 85.8580, Self_sup Loss 1.9226, Self_sup Accuracy 39.4634
+Epoch:  24
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4873, Obj-Class Accuracy 86.6965, Self_sup Loss 2.0003, Self_sup Accuracy 45.8916
+Epoch:  25
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.4342, Obj-Class Accuracy 87.1996, Self_sup Loss 1.7831, Self_sup Accuracy 47.8480
+Epoch:  26
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.4251, Obj-Class Accuracy 87.8144, Self_sup Loss 1.7705, Self_sup Accuracy 51.2018
+Epoch:  27
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2879, Obj-Class Accuracy 88.6529, Self_sup Loss 1.5403, Self_sup Accuracy 49.8044
+Epoch:  28
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3740, Obj-Class Accuracy 88.8765, Self_sup Loss 1.6012, Self_sup Accuracy 53.1023
+Epoch:  29
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3127, Obj-Class Accuracy 89.4913, Self_sup Loss 1.5986, Self_sup Accuracy 53.8849
+Epoch:  30
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.3427, Obj-Class Accuracy 89.9385, Self_sup Loss 1.6576, Self_sup Accuracy 55.5059
+Epoch:  31
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2525, Obj-Class Accuracy 90.6652, Self_sup Loss 1.2962, Self_sup Accuracy 60.3689
+Epoch:  32
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2135, Obj-Class Accuracy 91.0565, Self_sup Loss 1.2915, Self_sup Accuracy 60.9838
+Epoch:  33
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2549, Obj-Class Accuracy 91.0565, Self_sup Loss 1.2524, Self_sup Accuracy 61.9340
+Epoch:  34
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.3064, Obj-Class Accuracy 90.7211, Self_sup Loss 1.3554, Self_sup Accuracy 65.5674
+Epoch:  35
+13it [00:28,  2.22s/it]
+Obj-Class Loss 0.1962, Obj-Class Accuracy 90.8329, Self_sup Loss 1.1103, Self_sup Accuracy 67.6356
+Epoch:  36
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2231, Obj-Class Accuracy 91.6154, Self_sup Loss 1.1835, Self_sup Accuracy 70.1509
+Epoch:  37
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2435, Obj-Class Accuracy 91.7831, Self_sup Loss 1.1819, Self_sup Accuracy 70.7658
+Epoch:  38
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1872, Obj-Class Accuracy 91.6713, Self_sup Loss 1.0127, Self_sup Accuracy 73.3371
+Epoch:  39
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1781, Obj-Class Accuracy 91.6154, Self_sup Loss 0.8746, Self_sup Accuracy 74.6786
+Epoch:  40
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1856, Obj-Class Accuracy 92.1744, Self_sup Loss 0.9455, Self_sup Accuracy 75.4612
+Epoch:  41
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1704, Obj-Class Accuracy 91.9508, Self_sup Loss 0.9229, Self_sup Accuracy 76.4114
+Epoch:  42
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.2026, Obj-Class Accuracy 92.1744, Self_sup Loss 0.7813, Self_sup Accuracy 78.1442
+Epoch:  43
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1389, Obj-Class Accuracy 92.3421, Self_sup Loss 0.7359, Self_sup Accuracy 79.1504
+Epoch:  44
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0849, Obj-Class Accuracy 92.0067, Self_sup Loss 0.6044, Self_sup Accuracy 80.4919
+Epoch:  45
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1166, Obj-Class Accuracy 92.0067, Self_sup Loss 0.6600, Self_sup Accuracy 79.4298
+Epoch:  46
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1172, Obj-Class Accuracy 92.0067, Self_sup Loss 0.5653, Self_sup Accuracy 80.8832
+Epoch:  47
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.1255, Obj-Class Accuracy 92.0067, Self_sup Loss 0.6426, Self_sup Accuracy 82.7278
+Epoch:  48
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0904, Obj-Class Accuracy 92.1185, Self_sup Loss 0.5118, Self_sup Accuracy 83.0632
+Epoch:  49
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0824, Obj-Class Accuracy 92.3980, Self_sup Loss 0.5218, Self_sup Accuracy 84.0134
+Epoch:  50
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0789, Obj-Class Accuracy 92.5657, Self_sup Loss 0.4699, Self_sup Accuracy 86.3052
+Epoch:  51
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0892, Obj-Class Accuracy 92.0626, Self_sup Loss 0.4915, Self_sup Accuracy 84.7401
+Epoch:  52
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0649, Obj-Class Accuracy 92.3421, Self_sup Loss 0.3736, Self_sup Accuracy 87.0878
+Epoch:  53
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0615, Obj-Class Accuracy 92.3980, Self_sup Loss 0.4807, Self_sup Accuracy 86.3611
+Epoch:  54
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0805, Obj-Class Accuracy 92.4539, Self_sup Loss 0.4245, Self_sup Accuracy 86.8642
+Epoch:  55
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0888, Obj-Class Accuracy 92.5098, Self_sup Loss 0.3943, Self_sup Accuracy 87.9262
+Epoch:  56
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0652, Obj-Class Accuracy 92.5657, Self_sup Loss 0.3554, Self_sup Accuracy 88.7647
+Epoch:  57
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0564, Obj-Class Accuracy 92.3421, Self_sup Loss 0.3353, Self_sup Accuracy 87.5908
+Epoch:  58
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0598, Obj-Class Accuracy 92.4539, Self_sup Loss 0.3062, Self_sup Accuracy 89.2677
+Epoch:  59
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0568, Obj-Class Accuracy 92.3421, Self_sup Loss 0.3473, Self_sup Accuracy 89.1560
+Epoch:  60
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0535, Obj-Class Accuracy 92.6216, Self_sup Loss 0.3184, Self_sup Accuracy 89.1560
+Epoch:  61
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0646, Obj-Class Accuracy 92.6775, Self_sup Loss 0.3520, Self_sup Accuracy 89.1560
+Epoch:  62
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0704, Obj-Class Accuracy 92.3980, Self_sup Loss 0.3375, Self_sup Accuracy 89.8267
+Epoch:  63
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0495, Obj-Class Accuracy 92.3421, Self_sup Loss 0.2523, Self_sup Accuracy 89.3236
+Epoch:  64
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0458, Obj-Class Accuracy 92.7334, Self_sup Loss 0.2882, Self_sup Accuracy 90.1062
+Epoch:  65
+13it [00:29,  2.23s/it]
+Obj-Class Loss 0.0517, Obj-Class Accuracy 92.5657, Self_sup Loss 0.2714, Self_sup Accuracy 89.6031
+Epoch:  66
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0489, Obj-Class Accuracy 92.3980, Self_sup Loss 0.2572, Self_sup Accuracy 89.8826
+Epoch:  67
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0357, Obj-Class Accuracy 92.6775, Self_sup Loss 0.2059, Self_sup Accuracy 89.8826
+Epoch:  68
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0374, Obj-Class Accuracy 92.4539, Self_sup Loss 0.2854, Self_sup Accuracy 90.3298
+Epoch:  69
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0472, Obj-Class Accuracy 92.6216, Self_sup Loss 0.2539, Self_sup Accuracy 89.7708
+Epoch:  70
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0500, Obj-Class Accuracy 92.7334, Self_sup Loss 0.3169, Self_sup Accuracy 90.3857
+Epoch:  71
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0449, Obj-Class Accuracy 92.7893, Self_sup Loss 0.2482, Self_sup Accuracy 90.6652
+Epoch:  72
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0413, Obj-Class Accuracy 92.4539, Self_sup Loss 0.2925, Self_sup Accuracy 90.3857
+Epoch:  73
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0405, Obj-Class Accuracy 92.5657, Self_sup Loss 0.2389, Self_sup Accuracy 90.7770
+Epoch:  74
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0582, Obj-Class Accuracy 92.5657, Self_sup Loss 0.2429, Self_sup Accuracy 90.7211
+Epoch:  75
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0523, Obj-Class Accuracy 92.6216, Self_sup Loss 0.2355, Self_sup Accuracy 90.6093
+Epoch:  76
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0539, Obj-Class Accuracy 92.6216, Self_sup Loss 0.2498, Self_sup Accuracy 90.2739
+Epoch:  77
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0374, Obj-Class Accuracy 92.5098, Self_sup Loss 0.2277, Self_sup Accuracy 91.1683
+Epoch:  78
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0493, Obj-Class Accuracy 92.4539, Self_sup Loss 0.2230, Self_sup Accuracy 91.0006
+Epoch:  79
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0349, Obj-Class Accuracy 92.4539, Self_sup Loss 0.2551, Self_sup Accuracy 90.2739
+Target - Evaluation -- for known/unknown separation
+4365it [03:53, 18.73it/s]
+normality_scores samples: [0.5951410494744778, 0.38642605021595955, 0.4344626646488905, 0.36381562054157257, 0.2172293271869421] [0.19854287710040808, 0.24950971268117428, 0.2417236790060997, 0.3787723761051893, 0.155744188465178]
+ground_truth samples: [1, 1, 1, 1, 1] [0, 0, 0, 0, 0]
+AUROC 0.6287
+Generated random number is : 31677
+The number of target samples selected as known is:  630
+The number of target samples selected as unknown is:  3735
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Weight: 8
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:30,  2.33s/it]
+Obj-Class Loss 3.7232, Obj-Class Accuracy 2.9625, Self_sup Loss 5.5789, Self_sup Accuracy 0.6708
+Epoch:  1
+13it [00:29,  2.28s/it]
+Obj-Class Loss 3.2421, Obj-Class Accuracy 14.3097, Self_sup Loss 4.9550, Self_sup Accuracy 3.9687
+Epoch:  2
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.8483, Obj-Class Accuracy 25.2096, Self_sup Loss 4.7170, Self_sup Accuracy 6.3723
+Epoch:  3
+13it [00:29,  2.27s/it]
+Obj-Class Loss 2.4387, Obj-Class Accuracy 35.4947, Self_sup Loss 4.1608, Self_sup Accuracy 9.4466
+Epoch:  4
+13it [00:29,  2.25s/it]
+Obj-Class Loss 2.3214, Obj-Class Accuracy 43.5439, Self_sup Loss 3.9682, Self_sup Accuracy 11.5148
+Epoch:  5
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.9269, Obj-Class Accuracy 50.3074, Self_sup Loss 3.6050, Self_sup Accuracy 13.9184
+Epoch:  6
+13it [00:29,  2.26s/it]
+Obj-Class Loss 1.6850, Obj-Class Accuracy 56.9033, Self_sup Loss 3.2939, Self_sup Accuracy 18.8932
+Epoch:  7
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.3768, Obj-Class Accuracy 61.8781, Self_sup Loss 3.0839, Self_sup Accuracy 20.2907
+Epoch:  8
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.3255, Obj-Class Accuracy 64.0581, Self_sup Loss 2.7581, Self_sup Accuracy 24.0917
+Epoch:  9
+13it [00:29,  2.24s/it]
+Obj-Class Loss 1.0397, Obj-Class Accuracy 68.1386, Self_sup Loss 2.5091, Self_sup Accuracy 26.3835
+Epoch:  10
+13it [00:29,  2.27s/it]
+Obj-Class Loss 1.1164, Obj-Class Accuracy 71.9396, Self_sup Loss 2.6329, Self_sup Accuracy 28.3399
+Epoch:  11
+13it [00:29,  2.25s/it]
+Obj-Class Loss 1.0686, Obj-Class Accuracy 74.1755, Self_sup Loss 2.4316, Self_sup Accuracy 33.7060
+Epoch:  12
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.8647, Obj-Class Accuracy 76.0201, Self_sup Loss 2.1055, Self_sup Accuracy 36.6126
+Epoch:  13
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.8349, Obj-Class Accuracy 78.3678, Self_sup Loss 1.9517, Self_sup Accuracy 38.9603
+Epoch:  14
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.8406, Obj-Class Accuracy 80.2683, Self_sup Loss 2.1106, Self_sup Accuracy 43.0408
+Epoch:  15
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.5150, Obj-Class Accuracy 81.9452, Self_sup Loss 1.5566, Self_sup Accuracy 47.6244
+Epoch:  16
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.5993, Obj-Class Accuracy 83.5103, Self_sup Loss 1.3904, Self_sup Accuracy 53.1582
+Epoch:  17
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.6286, Obj-Class Accuracy 84.7960, Self_sup Loss 1.3848, Self_sup Accuracy 55.7854
+Epoch:  18
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.4471, Obj-Class Accuracy 86.7524, Self_sup Loss 1.1935, Self_sup Accuracy 58.3007
+Epoch:  19
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.5531, Obj-Class Accuracy 87.5349, Self_sup Loss 1.1860, Self_sup Accuracy 63.6669
+Epoch:  20
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.4549, Obj-Class Accuracy 88.0939, Self_sup Loss 1.1017, Self_sup Accuracy 66.2940
+Epoch:  21
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.4272, Obj-Class Accuracy 88.7088, Self_sup Loss 0.9383, Self_sup Accuracy 70.0950
+Epoch:  22
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.3429, Obj-Class Accuracy 89.4913, Self_sup Loss 0.8268, Self_sup Accuracy 72.0514
+Epoch:  23
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.3614, Obj-Class Accuracy 89.6031, Self_sup Loss 0.7560, Self_sup Accuracy 75.8524
+Epoch:  24
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2510, Obj-Class Accuracy 89.8826, Self_sup Loss 0.6261, Self_sup Accuracy 78.8709
+Epoch:  25
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1939, Obj-Class Accuracy 90.3298, Self_sup Loss 0.5846, Self_sup Accuracy 80.1006
+Epoch:  26
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.2862, Obj-Class Accuracy 91.0565, Self_sup Loss 0.5887, Self_sup Accuracy 81.2186
+Epoch:  27
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1680, Obj-Class Accuracy 91.1124, Self_sup Loss 0.4837, Self_sup Accuracy 83.2868
+Epoch:  28
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2318, Obj-Class Accuracy 91.7272, Self_sup Loss 0.4836, Self_sup Accuracy 84.7401
+Epoch:  29
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.2009, Obj-Class Accuracy 91.6154, Self_sup Loss 0.5124, Self_sup Accuracy 85.9698
+Epoch:  30
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.1838, Obj-Class Accuracy 92.1744, Self_sup Loss 0.3381, Self_sup Accuracy 87.3113
+Epoch:  31
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1689, Obj-Class Accuracy 92.1744, Self_sup Loss 0.3774, Self_sup Accuracy 87.3113
+Epoch:  32
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.2036, Obj-Class Accuracy 92.5098, Self_sup Loss 0.3873, Self_sup Accuracy 88.2616
+Epoch:  33
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1458, Obj-Class Accuracy 92.3421, Self_sup Loss 0.2375, Self_sup Accuracy 89.9385
+Epoch:  34
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1239, Obj-Class Accuracy 92.1185, Self_sup Loss 0.3165, Self_sup Accuracy 89.3236
+Epoch:  35
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.1100, Obj-Class Accuracy 92.3421, Self_sup Loss 0.2758, Self_sup Accuracy 89.6031
+Epoch:  36
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.1047, Obj-Class Accuracy 92.5098, Self_sup Loss 0.3067, Self_sup Accuracy 89.7708
+Epoch:  37
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.1258, Obj-Class Accuracy 92.3421, Self_sup Loss 0.2466, Self_sup Accuracy 89.0442
+Epoch:  38
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0613, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1977, Self_sup Accuracy 89.6590
+Epoch:  39
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0833, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1782, Self_sup Accuracy 90.3298
+Epoch:  40
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0815, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1800, Self_sup Accuracy 90.1621
+Epoch:  41
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0808, Obj-Class Accuracy 92.5098, Self_sup Loss 0.2045, Self_sup Accuracy 90.7770
+Epoch:  42
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0947, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1631, Self_sup Accuracy 90.0503
+Epoch:  43
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0490, Obj-Class Accuracy 92.6775, Self_sup Loss 0.1633, Self_sup Accuracy 90.7770
+Epoch:  44
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0701, Obj-Class Accuracy 92.7893, Self_sup Loss 0.1607, Self_sup Accuracy 91.1124
+Epoch:  45
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0557, Obj-Class Accuracy 92.3421, Self_sup Loss 0.1484, Self_sup Accuracy 91.0565
+Epoch:  46
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0688, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1557, Self_sup Accuracy 91.3359
+Epoch:  47
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0589, Obj-Class Accuracy 92.6775, Self_sup Loss 0.1166, Self_sup Accuracy 91.5036
+Epoch:  48
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0473, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0877, Self_sup Accuracy 91.2241
+Epoch:  49
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0717, Obj-Class Accuracy 92.6216, Self_sup Loss 0.1176, Self_sup Accuracy 91.6713
+Epoch:  50
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0720, Obj-Class Accuracy 92.6775, Self_sup Loss 0.1316, Self_sup Accuracy 92.0626
+Epoch:  51
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0405, Obj-Class Accuracy 92.5098, Self_sup Loss 0.0933, Self_sup Accuracy 91.2241
+Epoch:  52
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0580, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1575, Self_sup Accuracy 91.4477
+Epoch:  53
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0526, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1133, Self_sup Accuracy 91.9508
+Epoch:  54
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0366, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0998, Self_sup Accuracy 91.5595
+Epoch:  55
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0617, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1100, Self_sup Accuracy 91.5595
+Epoch:  56
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0481, Obj-Class Accuracy 92.6216, Self_sup Loss 0.1216, Self_sup Accuracy 91.9508
+Epoch:  57
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0583, Obj-Class Accuracy 92.8452, Self_sup Loss 0.0874, Self_sup Accuracy 92.3421
+Epoch:  58
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0518, Obj-Class Accuracy 92.3980, Self_sup Loss 0.0888, Self_sup Accuracy 91.3918
+Epoch:  59
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0509, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0862, Self_sup Accuracy 91.9508
+Epoch:  60
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0368, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0640, Self_sup Accuracy 91.9508
+Epoch:  61
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0411, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0921, Self_sup Accuracy 91.7831
+Epoch:  62
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0337, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0596, Self_sup Accuracy 92.4539
+Epoch:  63
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0385, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0952, Self_sup Accuracy 91.7272
+Epoch:  64
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0514, Obj-Class Accuracy 92.5657, Self_sup Loss 0.1191, Self_sup Accuracy 92.1185
+Epoch:  65
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0250, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0500, Self_sup Accuracy 91.8390
+Epoch:  66
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0321, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0711, Self_sup Accuracy 92.1185
+Epoch:  67
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0280, Obj-Class Accuracy 92.7334, Self_sup Loss 0.0647, Self_sup Accuracy 92.0067
+Epoch:  68
+13it [00:29,  2.24s/it]
+Obj-Class Loss 0.0296, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0479, Self_sup Accuracy 92.2303
+Epoch:  69
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0217, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0442, Self_sup Accuracy 92.2303
+Epoch:  70
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0232, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0683, Self_sup Accuracy 92.6216
+Epoch:  71
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0314, Obj-Class Accuracy 92.7334, Self_sup Loss 0.0746, Self_sup Accuracy 92.1185
+Epoch:  72
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0460, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0855, Self_sup Accuracy 92.1185
+Epoch:  73
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.0312, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0563, Self_sup Accuracy 92.1744
+Epoch:  74
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0800, Obj-Class Accuracy 92.3980, Self_sup Loss 0.1169, Self_sup Accuracy 92.0067
+Epoch:  75
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0293, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0489, Self_sup Accuracy 92.1744
+Epoch:  76
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0684, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1003, Self_sup Accuracy 92.1744
+Epoch:  77
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0297, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0543, Self_sup Accuracy 92.5657
+Epoch:  78
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0298, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0491, Self_sup Accuracy 92.6216
+Epoch:  79
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0349, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0643, Self_sup Accuracy 92.1744
+Target - Evaluation -- for known/unknown separation
+4365it [03:55, 18.50it/s]
+normality_scores samples: [0.3010629527270794, 0.2471014717593789, 0.6295325830578804, 0.21464542299509048, 0.334622198715806] [0.20848414860665798, 0.5127057358622551, 0.3303995933383703, 0.6197524443268776, 0.23350877687335014]
+ground_truth samples: [1, 1, 1, 1, 1] [0, 0, 0, 0, 0]
+AUROC 0.6192
+Generated random number is : 65212
+The number of target samples selected as known is:  1135
+The number of target samples selected as unknown is:  3230
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Weight: 16
+Source:  Art  Target:  Clipart
+---Jigsaw Self-Supervised Task---
+/usr/local/lib/python3.7/dist-packages/torch/utils/data/dataloader.py:481: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  cpuset_checked))
+Dataset size: source 1789, target 4365
+Step 1 --------------------------------------------
+Step size: 64
+Epoch:  0
+13it [00:30,  2.35s/it]
+Obj-Class Loss 3.8108, Obj-Class Accuracy 2.8508, Self_sup Loss 5.6598, Self_sup Accuracy 1.2856
+Epoch:  1
+13it [00:29,  2.30s/it]
+Obj-Class Loss 3.2213, Obj-Class Accuracy 11.1235, Self_sup Loss 4.6007, Self_sup Accuracy 5.7015
+Epoch:  2
+13it [00:30,  2.31s/it]
+Obj-Class Loss 2.6781, Obj-Class Accuracy 26.7747, Self_sup Loss 4.4003, Self_sup Accuracy 7.2666
+Epoch:  3
+13it [00:29,  2.28s/it]
+Obj-Class Loss 2.3847, Obj-Class Accuracy 38.9603, Self_sup Loss 3.9452, Self_sup Accuracy 10.6205
+Epoch:  4
+13it [00:29,  2.30s/it]
+Obj-Class Loss 1.9737, Obj-Class Accuracy 48.8541, Self_sup Loss 3.5816, Self_sup Accuracy 12.9122
+Epoch:  5
+13it [00:30,  2.31s/it]
+Obj-Class Loss 1.9680, Obj-Class Accuracy 56.2884, Self_sup Loss 3.3468, Self_sup Accuracy 16.7132
+Epoch:  6
+13it [00:29,  2.28s/it]
+Obj-Class Loss 1.6524, Obj-Class Accuracy 61.8781, Self_sup Loss 3.0410, Self_sup Accuracy 20.1789
+Epoch:  7
+13it [00:29,  2.28s/it]
+Obj-Class Loss 1.2171, Obj-Class Accuracy 66.8530, Self_sup Loss 2.5459, Self_sup Accuracy 24.6506
+Epoch:  8
+13it [00:29,  2.29s/it]
+Obj-Class Loss 1.0913, Obj-Class Accuracy 70.3745, Self_sup Loss 1.9804, Self_sup Accuracy 31.5260
+Epoch:  9
+13it [00:29,  2.28s/it]
+Obj-Class Loss 1.2749, Obj-Class Accuracy 73.3930, Self_sup Loss 2.1479, Self_sup Accuracy 39.9106
+Epoch:  10
+13it [00:29,  2.30s/it]
+Obj-Class Loss 1.0942, Obj-Class Accuracy 77.5852, Self_sup Loss 1.8104, Self_sup Accuracy 44.2705
+Epoch:  11
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.8653, Obj-Class Accuracy 78.2560, Self_sup Loss 1.5454, Self_sup Accuracy 51.7608
+Epoch:  12
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.8709, Obj-Class Accuracy 81.4980, Self_sup Loss 1.4018, Self_sup Accuracy 55.7295
+Epoch:  13
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.7717, Obj-Class Accuracy 83.3985, Self_sup Loss 1.0693, Self_sup Accuracy 62.2694
+Epoch:  14
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.5986, Obj-Class Accuracy 85.6344, Self_sup Loss 0.8297, Self_sup Accuracy 68.0827
+Epoch:  15
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.6598, Obj-Class Accuracy 86.8083, Self_sup Loss 0.9484, Self_sup Accuracy 72.5545
+Epoch:  16
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.4161, Obj-Class Accuracy 88.1498, Self_sup Loss 0.5963, Self_sup Accuracy 76.4673
+Epoch:  17
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.4912, Obj-Class Accuracy 88.9324, Self_sup Loss 0.6298, Self_sup Accuracy 79.7093
+Epoch:  18
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.4275, Obj-Class Accuracy 90.2739, Self_sup Loss 0.5392, Self_sup Accuracy 81.8334
+Epoch:  19
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.2843, Obj-Class Accuracy 90.8329, Self_sup Loss 0.4627, Self_sup Accuracy 83.2309
+Epoch:  20
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.2936, Obj-Class Accuracy 91.3359, Self_sup Loss 0.4532, Self_sup Accuracy 84.6283
+Epoch:  21
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.2432, Obj-Class Accuracy 91.6154, Self_sup Loss 0.3653, Self_sup Accuracy 84.3488
+Epoch:  22
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.3104, Obj-Class Accuracy 91.8949, Self_sup Loss 0.3911, Self_sup Accuracy 87.1996
+Epoch:  23
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.1830, Obj-Class Accuracy 91.8390, Self_sup Loss 0.2613, Self_sup Accuracy 86.6965
+Epoch:  24
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.2078, Obj-Class Accuracy 92.1744, Self_sup Loss 0.3477, Self_sup Accuracy 88.0939
+Epoch:  25
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.1830, Obj-Class Accuracy 92.3980, Self_sup Loss 0.2092, Self_sup Accuracy 89.3236
+Epoch:  26
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.1476, Obj-Class Accuracy 92.1744, Self_sup Loss 0.1996, Self_sup Accuracy 89.0442
+Epoch:  27
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.1515, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1712, Self_sup Accuracy 89.4913
+Epoch:  28
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.1371, Obj-Class Accuracy 92.3421, Self_sup Loss 0.1396, Self_sup Accuracy 90.0503
+Epoch:  29
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0908, Obj-Class Accuracy 92.5657, Self_sup Loss 0.1251, Self_sup Accuracy 90.0503
+Epoch:  30
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.1371, Obj-Class Accuracy 92.7334, Self_sup Loss 0.1881, Self_sup Accuracy 90.4416
+Epoch:  31
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.0999, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0919, Self_sup Accuracy 90.4416
+Epoch:  32
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0805, Obj-Class Accuracy 92.3421, Self_sup Loss 0.1250, Self_sup Accuracy 90.8329
+Epoch:  33
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0957, Obj-Class Accuracy 92.5657, Self_sup Loss 0.1307, Self_sup Accuracy 90.3857
+Epoch:  34
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0769, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1110, Self_sup Accuracy 91.1683
+Epoch:  35
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0595, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1075, Self_sup Accuracy 90.7211
+Epoch:  36
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.1144, Obj-Class Accuracy 92.5098, Self_sup Loss 0.1253, Self_sup Accuracy 91.1683
+Epoch:  37
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0879, Obj-Class Accuracy 92.3421, Self_sup Loss 0.0963, Self_sup Accuracy 90.9447
+Epoch:  38
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0737, Obj-Class Accuracy 92.5657, Self_sup Loss 0.1058, Self_sup Accuracy 91.5036
+Epoch:  39
+13it [00:30,  2.31s/it]
+Obj-Class Loss 0.0463, Obj-Class Accuracy 92.3421, Self_sup Loss 0.0629, Self_sup Accuracy 91.2800
+Epoch:  40
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0643, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0563, Self_sup Accuracy 91.5036
+Epoch:  41
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.0475, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0664, Self_sup Accuracy 91.2800
+Epoch:  42
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0884, Obj-Class Accuracy 92.3421, Self_sup Loss 0.1131, Self_sup Accuracy 91.3359
+Epoch:  43
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0663, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1303, Self_sup Accuracy 91.1683
+Epoch:  44
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0718, Obj-Class Accuracy 92.3980, Self_sup Loss 0.1096, Self_sup Accuracy 91.3918
+Epoch:  45
+13it [00:29,  2.31s/it]
+Obj-Class Loss 0.0570, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0855, Self_sup Accuracy 91.6154
+Epoch:  46
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0566, Obj-Class Accuracy 92.5098, Self_sup Loss 0.0703, Self_sup Accuracy 91.4477
+Epoch:  47
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0520, Obj-Class Accuracy 92.4539, Self_sup Loss 0.0889, Self_sup Accuracy 91.0565
+Epoch:  48
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.0665, Obj-Class Accuracy 92.7334, Self_sup Loss 0.1138, Self_sup Accuracy 91.8949
+Epoch:  49
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0672, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0698, Self_sup Accuracy 91.9508
+Epoch:  50
+13it [00:30,  2.32s/it]
+Obj-Class Loss 0.0366, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0508, Self_sup Accuracy 91.7272
+Epoch:  51
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0563, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1226, Self_sup Accuracy 91.6154
+Epoch:  52
+13it [00:30,  2.34s/it]
+Obj-Class Loss 0.0284, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0346, Self_sup Accuracy 91.6154
+Epoch:  53
+13it [00:30,  2.36s/it]
+Obj-Class Loss 0.0409, Obj-Class Accuracy 92.5098, Self_sup Loss 0.0253, Self_sup Accuracy 91.7272
+Epoch:  54
+13it [00:29,  2.31s/it]
+Obj-Class Loss 0.0629, Obj-Class Accuracy 92.3980, Self_sup Loss 0.0480, Self_sup Accuracy 91.7272
+Epoch:  55
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0749, Obj-Class Accuracy 92.4539, Self_sup Loss 0.1187, Self_sup Accuracy 91.5595
+Epoch:  56
+13it [00:29,  2.31s/it]
+Obj-Class Loss 0.0448, Obj-Class Accuracy 92.7334, Self_sup Loss 0.0435, Self_sup Accuracy 92.2303
+Epoch:  57
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0375, Obj-Class Accuracy 92.3980, Self_sup Loss 0.0684, Self_sup Accuracy 91.7272
+Epoch:  58
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0425, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0269, Self_sup Accuracy 92.0626
+Epoch:  59
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0361, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0707, Self_sup Accuracy 92.1744
+Epoch:  60
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0285, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0387, Self_sup Accuracy 92.1744
+Epoch:  61
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0423, Obj-Class Accuracy 92.5098, Self_sup Loss 0.0422, Self_sup Accuracy 92.0067
+Epoch:  62
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0573, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0882, Self_sup Accuracy 92.0626
+Epoch:  63
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0345, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0639, Self_sup Accuracy 91.9508
+Epoch:  64
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0285, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0258, Self_sup Accuracy 91.8949
+Epoch:  65
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0367, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0301, Self_sup Accuracy 91.7831
+Epoch:  66
+13it [00:29,  2.25s/it]
+Obj-Class Loss 0.0301, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0515, Self_sup Accuracy 91.9508
+Epoch:  67
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0234, Obj-Class Accuracy 92.7334, Self_sup Loss 0.0311, Self_sup Accuracy 92.3980
+Epoch:  68
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0311, Obj-Class Accuracy 92.4539, Self_sup Loss 0.0380, Self_sup Accuracy 92.1744
+Epoch:  69
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0370, Obj-Class Accuracy 92.6216, Self_sup Loss 0.0605, Self_sup Accuracy 92.3421
+Epoch:  70
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0295, Obj-Class Accuracy 92.8452, Self_sup Loss 0.0366, Self_sup Accuracy 92.3980
+Epoch:  71
+13it [00:29,  2.29s/it]
+Obj-Class Loss 0.0318, Obj-Class Accuracy 92.4539, Self_sup Loss 0.0289, Self_sup Accuracy 92.0626
+Epoch:  72
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0414, Obj-Class Accuracy 92.7893, Self_sup Loss 0.0347, Self_sup Accuracy 92.3980
+Epoch:  73
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0447, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0318, Self_sup Accuracy 92.6216
+Epoch:  74
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0244, Obj-Class Accuracy 92.7893, Self_sup Loss 0.0263, Self_sup Accuracy 92.5098
+Epoch:  75
+13it [00:29,  2.26s/it]
+Obj-Class Loss 0.0521, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0304, Self_sup Accuracy 92.4539
+Epoch:  76
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0261, Obj-Class Accuracy 92.6775, Self_sup Loss 0.0492, Self_sup Accuracy 92.5098
+Epoch:  77
+13it [00:29,  2.27s/it]
+Obj-Class Loss 0.0175, Obj-Class Accuracy 92.8452, Self_sup Loss 0.0148, Self_sup Accuracy 92.4539
+Epoch:  78
+13it [00:29,  2.28s/it]
+Obj-Class Loss 0.0251, Obj-Class Accuracy 92.5098, Self_sup Loss 0.0696, Self_sup Accuracy 92.0067
+Epoch:  79
+13it [00:29,  2.30s/it]
+Obj-Class Loss 0.0279, Obj-Class Accuracy 92.5657, Self_sup Loss 0.0263, Self_sup Accuracy 92.3421
+Target - Evaluation -- for known/unknown separation
+3396it [02:59, 19.03it/s]
+0.6019
+
+Found best weight = 4. Let's try with different lr and 65 epochs with blur
