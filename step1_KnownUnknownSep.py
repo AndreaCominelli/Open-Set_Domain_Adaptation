@@ -6,7 +6,7 @@ from tqdm import tqdm
 #### Implement Step1
 
 # multi-head = 1 if there is only one head otherwise it will represent the number of clasess (and of heads, one per class)
-def _do_epoch(feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, optimizer,device,criterion):
+def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, optimizer,device,criterion):
     
     feature_extractor.train()
     obj_cls.train()
@@ -42,6 +42,8 @@ def _do_epoch(feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, s
                 self_lbls = (lbls * 4) + self_lbls
             if self_sup_type == "flip":
                 self_lbls = (lbls * 2) + self_lbls
+            if self_sup_type == "jigsaw":
+                self_lbls = (lbls * args.jigsaw_permutations) + self_lbls
             self_loss = criterion(self_predictions, self_lbls)
             _, self_preds = torch.max(self_predictions, 1)
             running_self_corrects += torch.sum(self_preds == self_lbls.data)
@@ -67,7 +69,7 @@ def _do_epoch(feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, s
 
     return img_loss, img_acc, self_loss, self_acc
 
-def step1(feature_extractor,obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, n_epochs, learning_rate, weight_decay, train_all, enable_scheduler, device):
+def step1(args, feature_extractor,obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, n_epochs, learning_rate, weight_decay, train_all, enable_scheduler, device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, weight_decay, train_all)
     criterion = nn.CrossEntropyLoss()
     self_accuracies = {}
@@ -75,7 +77,7 @@ def step1(feature_extractor,obj_cls, self_sup_type, self_cls, multi_head, source
 
     for epoch in range(n_epochs):
         print('Epoch: ',epoch)
-        obj_loss, obj_acc, self_loss, self_acc = _do_epoch(feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, optimizer,device,criterion)
+        obj_loss, obj_acc, self_loss, self_acc = _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, optimizer,device,criterion)
         
         self_accuracies[epoch] = self_acc
         obj_accuracies[epoch] = obj_acc
