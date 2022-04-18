@@ -63,6 +63,8 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
                         normality_score = act_norm_score
 
             normality_scores.append(normality_score)
+            # set the threshold as the mean of the normality scores
+            threshold = np.mean(np.array(normality_score))
 
             if normality_score > threshold:
                 # target samples which labels is under n_class_known
