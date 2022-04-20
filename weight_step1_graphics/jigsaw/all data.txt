@@ -1634,3 +1634,10 @@ Target - Evaluation -- for known/unknown separation
 0.6019
 
 Found best weight = 4. Let's try with different lr and 65 epochs with blur
+
+0.5694 -> 0.1
+0.6352 -> 1
+0.6327 -> 2
+0.6287 -> 4
+0.6192 -> 8
+manca 16!

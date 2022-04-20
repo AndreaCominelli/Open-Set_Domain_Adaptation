@@ -2,6 +2,7 @@ import math
 import seaborn as sb
 import matplotlib.pyplot as plt
 import numpy as npy
+import os
 
 colors = ["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500", "#AB3428"]
 
@@ -9,12 +10,12 @@ def truncate(number, digits=3):
     stepper = 10.0 ** digits
     return math.trunc(stepper * number) / stepper
 
-def plot_acc(model="obj"):
+def plot_acc(model="obj", dir="./stats"):
     sb.set_style("darkgrid")
     if model == "obj":
-        path = "./stats/obj_stats.txt"
+        path = os.path.join(dir, "obj_stats.txt")
     else:
-        path = "./stats/self_stats.txt"
+        path = os.path.join(dir, "self_stats.txt")
     print(path)
     with open(path, "r") as f:
         lines = f.readlines()
@@ -36,5 +37,5 @@ def plot_acc(model="obj"):
         plt.show()
 
 if __name__ == "__main__":
-    plot_acc(model="obj")
-    plot_acc(model="self")
+    plot_acc(model="obj", dir="./weight_step1_graphics/jigsaw")
+    plot_acc(model="self", dir="./weight_step1_graphics/jigsaw")
