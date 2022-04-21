@@ -194,10 +194,10 @@ class Trainer:
         # if params are already computed, load the model and procede with its evaluation
         
         if self.args.save_model:
-            self.feature_extractor.load_state_dict(torch.load("./models/feature_extractor_params.pt"), strict=False)
-            self.obj_cls.load_state_dict(torch.load("./models/obj_cls_params.pt"), strict=False)
+            self.feature_extractor.load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt"), strict=False)
+            self.obj_cls.load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/obj_cls_params.pt"), strict=False)
             for i in range(len(self.cls_dict[self_sup_cls][1])):
-                self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self_sup_cls}_{i}_params.pt"), strict=False)
+                self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/{self_sup_cls}_{i}_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
 
