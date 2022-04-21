@@ -179,10 +179,10 @@ class Trainer:
         mod = 0
         while (model_present and mod < len(self.cls_dict[self_sup_cls][1])):
             mod += 1
-            if not os.path.isfile(f"./models/{self_sup_cls}_{mod}_params.pt"):
+            if not os.path.isfile(f"./models/{self.args.self_sup_task}/{self_sup_cls}_{mod}_params.pt"):
                 model_present = False
 
-        if not os.path.isfile("./models/feature_extractor_params.pt") and not os.path.isfile("./models/obj_cls_params.pt"): # and not model_present:
+        if not os.path.isfile(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.self_sup_task}/obj_cls_params.pt"): # and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.args, self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][0], self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.args.enable_scheduler, self.device)
             if self.args.save_model:
