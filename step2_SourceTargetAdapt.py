@@ -139,7 +139,7 @@ def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,t
 
     statistics = ""
     for hos_acc in hos_values_list: # 1:0.05 , 2:0.15... epoch:accuracy
-        statistics += str(hos_acc[0]) + ":" + str(hos_acc[1].item()) + ","
+        statistics += str(hos_acc[0]) + ":" + str(hos_acc[1]) + ","
     statistics += str(weight) + "\n"
     hos_stats.write(statistics)
     hos_stats.close()
