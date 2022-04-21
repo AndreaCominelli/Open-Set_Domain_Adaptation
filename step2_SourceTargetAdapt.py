@@ -127,6 +127,7 @@ def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,t
         hos = _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
         
         hos_values[epoch] = hos
+        print(f"HOS VALUES -------------------------------> {hos_values[epoch]}")
 
         if args.enable_scheduler:    
             scheduler.step()
