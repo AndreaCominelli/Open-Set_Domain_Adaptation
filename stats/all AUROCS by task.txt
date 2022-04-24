@@ -1,0 +1,29 @@
+Random blur has been applied on rotation and flip task during training of first and second step.
+Jigsaw task was trained (on both steps) without blur, due to its resource demanding nature
+
+FLIP
+
+0.6325 - 0.1
+0.6631 - 1 -> tried then with random blur
+0.6507 - 2 
+0.6412 - 4
+0.6416 - 8
+0.6404 - 16
+
+ROT
+
+0.5840 - 0.1
+0.6463 - 1
+0.6479 - 2
+0.6591 - 4 -> random blur 0.2 + kernel size = 21 --> AUROC 0.6613
+0.6396 - 8
+0.6470 - 16
+
+JIGSAW -> 7 permutations, (3x3), no blur
+
+0.5694 -> 0.1
+0.6352 -> 1
+0.6327 -> 2
+0.6287 -> 4
+0.6192 -> 8
+0.6079 -> 16

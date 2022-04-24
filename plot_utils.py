@@ -10,10 +10,12 @@ def truncate(number, digits=3):
     stepper = 10.0 ** digits
     return math.trunc(stepper * number) / stepper
 
-def plot_acc(model="obj", dir="./stats"):
+def plot_acc(model="obj", sup_task="", dir="./stats"):
     sb.set_style("darkgrid")
     if model == "obj":
         path = os.path.join(dir, "obj_stats.txt")
+    elif model == "hos":
+        path = os.path.join(dir, f"hos_stats_{sup_task}.txt")
     else:
         path = os.path.join(dir, "self_stats.txt")
     print(path)
@@ -37,5 +39,4 @@ def plot_acc(model="obj", dir="./stats"):
         plt.show()
 
 if __name__ == "__main__":
-    plot_acc(model="obj", dir="./weight_step1_graphics/jigsaw")
-    plot_acc(model="self", dir="./weight_step1_graphics/jigsaw")
+    plot_acc(model="hos", sup_task="Flip", dir="./weight_graphics/flip")
