@@ -1,4 +1,5 @@
-Random blur has been applied on rotation and flip task during training of first and second step.
+Once we found the loss parameter which maximises the AUROC score for the step1, we retrain that model, using the best parameter and 65 epochs (we can see on the plots that by around that number of epochs we converge over the optimum). Learning rate has been adapted once we chosed this first hyperparameter. lr = 0.003 since to be the best and weight decay has not been modified
+On this second training run, random blur has been applied on rotation and flip task. This seems to improve a little bit the already good AUROC score.
 Jigsaw task was trained (on both steps) without blur, due to its resource demanding nature
 
 FLIP
@@ -15,7 +16,7 @@ ROT
 0.5840 - 0.1
 0.6463 - 1
 0.6479 - 2
-0.6591 - 4 -> random blur 0.2 + kernel size = 21 --> AUROC 0.6613
+0.6591 - 4 -> random blur 0.2 + kernel size = 21 --> AUROC 0.6643
 0.6396 - 8
 0.6470 - 16
 
