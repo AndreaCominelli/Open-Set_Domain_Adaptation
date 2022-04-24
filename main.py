@@ -91,7 +91,7 @@ def get_args():
     # model options
     parser.add_argument("--save_model", type=bool, default=False, help="If true, the current model will be saved between one training session and the next one")
     parser.add_argument("--self_sup_task", default="Rot", help="The type of self supervised task to apply: Rot, Flip, Jig, RotMH, FlipMH")
-    parser.add_argument("--use_saved_model", type=bool, default=False, help="If true, it searches inside the correct directory an existing model")
+    parser.add_argument("--train_dont_save", type=bool, default=False, help="If true, we retrain the model even if another model as already present. if save_model is true, the new model will overwrite the other one")
 
 
     return parser.parse_args()
@@ -184,7 +184,7 @@ class Trainer:
             if not os.path.isfile(f"./models/{self.args.self_sup_task}/{self_sup_cls}_{mod}_params.pt"):
                 model_present = False
 
-        if (not os.path.isfile(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.self_sup_task}/obj_cls_params.pt")) or self.args.use_saved_model : # and not model_present:
+        if (not os.path.isfile(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.self_sup_task}/obj_cls_params.pt")) or self.args.train_dont_save : # and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.args, self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][0], self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.args.enable_scheduler, self.device)
             if self.args.save_model:
