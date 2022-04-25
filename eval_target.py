@@ -109,4 +109,4 @@ def evaluation(feature_extractor, self_cls, multi_head, n_classes_known, thresho
     print('The number of target samples selected as known is: ', number_of_known_samples)
     print('The number of target samples selected as unknown is: ', number_of_unknown_samples)
 
-    return rand, auroc
+    return rand

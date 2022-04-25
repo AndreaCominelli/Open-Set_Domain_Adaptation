@@ -92,8 +92,7 @@ def get_args():
     parser.add_argument("--save_model", type=bool, default=False, help="If true, the current model will be saved between one training session and the next one")
     parser.add_argument("--self_sup_task", default="Rot", help="The type of self supervised task to apply: Rot, Flip, Jig, RotMH, FlipMH")
     parser.add_argument("--train_dont_save", type=bool, default=False, help="If true, we retrain the model even if another model as already present. if save_model is true, the new model will overwrite the other one")
-
-
+    
     return parser.parse_args()
 
 
@@ -181,29 +180,29 @@ class Trainer:
         mod = 0
         while (model_present and mod < len(self.cls_dict[self_sup_cls][1])):
             mod += 1
-            if not os.path.isfile(f"./models/{self.args.self_sup_task}/{self_sup_cls}_{mod}_params.pt"):
+            if not os.path.isfile(f"./models/{self.args.source}/{self.args.self_sup_task}/{self_sup_cls}_{mod}_params.pt"):
                 model_present = False
 
-        if (not os.path.isfile(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.self_sup_task}/obj_cls_params.pt")) or self.args.train_dont_save : # and not model_present:
+        if (not os.path.isfile(f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt")) or self.args.train_dont_save : # and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.args, self.feature_extractor, self.obj_cls, self.cls_dict[self_sup_cls][0], self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.args.learning_rate, self.args.weight_decay, self.args.train_all, self.args.enable_scheduler, self.device)
             if self.args.save_model:
-                torch.save(fe_model, f"./models/{self.args.self_sup_task}/feature_extractor_params.pt")
-                torch.save(obj_model, f"./models/{self.args.self_sup_task}/obj_cls_params.pt")
+                torch.save(fe_model, f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt")
+                torch.save(obj_model, f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt")
                 for i in range(len(self_model)):
-                    torch.save(self_model[i], f"./models/{self.args.self_sup_task}/{self_sup_cls}_{i}_params.pt")
+                    torch.save(self_model[i], f"./models/{self.args.source}/{self.args.self_sup_task}/{self_sup_cls}_{i}_params.pt")
 
         # if params are already computed, load the model and procede with its evaluation
         
         if self.args.save_model:
-            self.feature_extractor.load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/feature_extractor_params.pt"), strict=False)
-            self.obj_cls.load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/obj_cls_params.pt"), strict=False)
+            self.feature_extractor.load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt"), strict=False)
+            self.obj_cls.load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt"), strict=False)
             for i in range(len(self.cls_dict[self_sup_cls][1])):
-                self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self.args.self_sup_task}/{self_sup_cls}_{i}_params.pt"), strict=False)
+                self.cls_dict[self_sup_cls][1][i].load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/{self_sup_cls}_{i}_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
 
-        rand, auroc = evaluation(self.feature_extractor, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.args.n_classes_known, self.args.threshold, self.target_loader_eval, self.args.source, self.args.target, self.device)
+        rand = evaluation(self.feature_extractor, self.cls_dict[self_sup_cls][1], len(self.cls_dict[self_sup_cls][1]), self.args.n_classes_known, self.args.threshold, self.target_loader_eval, self.args.source, self.args.target, self.device)
 
         # new dataloaders
         # source_path_file -> contains the names of source and target images selected as unknown
@@ -217,10 +216,10 @@ class Trainer:
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
         self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
 
-        
         print('Step 2 --------------------------------------------')
         step2(self.args, self.feature_extractor, self.obj_cls, self.cls_dict_step2[self_sup_cls][1], len(self.cls_dict_step2[self_sup_cls][1]), self.source_loader,self.target_loader_train,self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.args.learning_rate, self.args.train_all, self.args.n_classes_known, self.args.n_classes_tot, self.device)
-
+            
+        
 def main():
     args = get_args()
     trainer = Trainer(args)

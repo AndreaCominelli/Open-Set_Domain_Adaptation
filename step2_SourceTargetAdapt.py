@@ -52,7 +52,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
             # prediction on target set of the rotated image (in case of rotation)
             self_prediction_target = self_cls[0](torch.cat((feature_target_self, feature_target), dim=1))
             self_loss = criterion(self_prediction_target, self_l_target)
-            _, self_preds = torch.max(self_prediction_target, 1) # it was "self_predictions" not "self_prediction_target" ??
+            _, self_preds = torch.max(self_prediction_target, 1)
             self_corrects += torch.sum(self_preds == self_l_target.data)
         else:
             self_loss = 0
@@ -87,9 +87,6 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     feature_extractor.eval()
     obj_cls.eval()
     
-    """for rot_cls_i in self_cls:
-        rot_cls_i.eval()"""
-
     corrects_known = 0
     corrects_unknown = 0
     total_known = 0

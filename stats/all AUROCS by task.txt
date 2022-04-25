@@ -2,10 +2,16 @@ Once we found the loss parameter which maximises the AUROC score for the step1, 
 On this second training run, random blur has been applied on rotation and flip task. This seems to improve a little bit the already good AUROC score.
 Jigsaw task was trained (on both steps) without blur, due to its resource demanding nature
 
+Now, for rotation task, test on a set of weight the step 2, using threshold = mean of normality scores, for 50 epochs and check the final hos value for each weight. If hos get a plateau, perform an early stopping. Finally train all the classifiers (Rot, Flip, Jig) on those amount of epochs and search for the best weight parameter (the one that maximise the hos metrics)
+learning rate and weight decay are linked with the ones found at step 1, so don't change them
+
+Finally train for 65 epochs, optimal weight 1 + 20 epochs, optimal weight 2 for each pair of source / target set and save the hos + unk + os metrics.
+We can show this for each type of self-supervised classifier
+
 FLIP
 
 0.6325 - 0.1
-0.6631 - 1 -> tried then with random blur
+0.6631 - 1 -> tried then with random blur -> 0.6454 -> don't use blur
 0.6507 - 2 
 0.6412 - 4
 0.6416 - 8
