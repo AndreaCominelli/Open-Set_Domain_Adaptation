@@ -112,23 +112,25 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,ta
     unk = corrects_unknown / total_unknown
     hos = 2 * os_star * unk / (os_star + unk)
     print(" OS*: %.4f, UNK: %.4f, HOS: %.4f" % (os_star, unk, hos))
-    return hos
+    return os_star, unk, hos
    
 def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval, weight, n_epochs, learning_rate, train_all, n_class_known, n_class_tot, device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,obj_cls, self_cls, n_epochs, learning_rate, args.weight_decay, train_all)
     
     hos_values = {}
+    os_star = 0
+    unk = 0
+    hos = 0
 
     for epoch in range(n_epochs):
         print('Epoch: ',epoch)
-        hos = _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
+        os_star, unk, hos = _do_epoch(feature_extractor, obj_cls, self_cls, multi_head, source_loader,target_loader_train,target_loader_eval,weight,optimizer, n_class_known, n_class_tot, device)
         
         hos_values[epoch] = hos
     
         if args.enable_scheduler:    
             scheduler.step()
         
-    
     hos_values_list = [(k, v) for k, v in hos_values.items()]
     
     hos_stats = open(f"./stats/hos_stats_{args.self_sup_task}.txt", "a")
@@ -139,3 +141,7 @@ def step2(args,feature_extractor, obj_cls, self_cls, multi_head, source_loader,t
     statistics += str(weight) + "\n"
     hos_stats.write(statistics)
     hos_stats.close()
+
+    metrics = open(f"./models/{args.source}/metrics_{args.self_sup_task}.txt", "a")
+    metrics.write(f"{args.self_sup_task} - ({args.source} -- {args.target}) - (OS: {str(round(os_star, 4))}, UNK: {str(round(unk, 4))}, HOS: {str(round(hos, 4))})\n")
+    metrics.close()
