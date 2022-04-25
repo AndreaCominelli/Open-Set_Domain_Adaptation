@@ -1,8 +1,11 @@
-Once we found the loss parameter which maximises the AUROC score for the step1, we retrain that model, using the best parameter and 65 epochs (we can see on the plots that by around that number of epochs we converge over the optimum). Learning rate has been adapted once we chosed this first hyperparameter. lr = 0.003 since to be the best and weight decay has not been modified
-On this second training run, random blur has been applied on rotation and flip task. This seems to improve a little bit the already good AUROC score.
+Once we found the loss parameter which maximises the AUROC score for the step1, we retrain that model, using the best parameter and 65 epochs (we can see on the plots that by around that number of epochs we converge over the optimum). Learning rate has been adapted once we chose this first hyperparameter. lr = 0.003 since to be the best and weight decay has not been modified
+On this second training run, random blur has been applied on rotation. This seems to improve a little bit the already good AUROC score.
 Jigsaw task was trained (on both steps) without blur, due to its resource demanding nature
+Flip does not improve it's score
 
-Now, for rotation task, test on a set of weight the step 2, using threshold = mean of normality scores, for 50 epochs and check the final hos value for each weight. If hos get a plateau, perform an early stopping. Finally train all the classifiers (Rot, Flip, Jig) on those amount of epochs and search for the best weight parameter (the one that maximise the hos metrics)
+we now need to find the best threshold. The best one is the one that recognize the closest number of samples(i.e if 3000 is the original number of known samples, we must find the threshold that took the number of known sample, on target, the closest as possible to 3000)
+
+Now, for rotation task, test on a set of weight the step 2 for 50 epochs and check the final hos value for each weight. If hos get a plateau, perform an early stopping. Finally train all the classifiers (Rot, Flip, Jig) on those amount of epochs and search for the best weight parameter (the one that maximise the hos metrics, since this is the harmonic mean between os and unk)
 learning rate and weight decay are linked with the ones found at step 1, so don't change them
 
 Finally train for 65 epochs, optimal weight 1 + 20 epochs, optimal weight 2 for each pair of source / target set and save the hos + unk + os metrics.
