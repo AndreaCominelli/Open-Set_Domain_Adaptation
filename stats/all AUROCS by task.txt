@@ -11,10 +11,12 @@ learning rate and weight decay are linked with the ones found at step 1, so don'
 Finally train for 65 epochs, optimal weight 1 + 20 epochs, optimal weight 2 for each pair of source / target set and save the hos + unk + os metrics.
 We can show this for each type of self-supervised classifier
 
+AUROC by weight-1
+
 FLIP
 
 0.6325 - 0.1
-0.6631 - 1 -> tried then with random blur -> 0.6454 -> don't use blur
+0.6600 - 1 -> tried then with random blur -> 0.6454 -> don't use blur
 0.6507 - 2 
 0.6412 - 4
 0.6416 - 8
@@ -32,8 +34,37 @@ ROT
 JIGSAW -> 7 permutations, (3x3), no blur
 
 0.5694 -> 0.1
-0.6352 -> 1
+0.6352 -> 1 -> best one
 0.6327 -> 2
 0.6287 -> 4
 0.6192 -> 8
 0.6079 -> 16
+
+Num of known samples by THRESHOLD
+
+FLIP
+
+4022 -> 0.1
+1824 -> 0.3
+845  -> 0.5
+328	 -> 0.7
+103	 -> 0.9
+2918 -> 0.18 -> best
+
+ROTATION
+
+4262 -> 0.1
+2515 -> 0.3
+1351 -> 0.5
+592  -> 0.7
+155  -> 0.9
+2932 -> 0.25 -> best
+
+JIGSAW
+
+2917 -> 0.1	-> best
+483	 -> 0.3
+1	 -> 0.5
+0 	 -> 0.7
+0    -> 0.9
+
