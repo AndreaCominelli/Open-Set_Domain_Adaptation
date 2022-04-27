@@ -164,7 +164,7 @@ class Trainer:
         self.target_path_file = 'txt_list/' + args.target + '.txt'
     
         with open(self.target_path_file, "r") as f:
-            target_list_known_size = len(filter(lambda path: int(path.rstrip().split()[1]) < int(self.args.n_classes_known), f.readlines()))
+            target_list_known_size = len(list(filter(lambda path: int(path.rstrip().split()[1]) < int(self.args.n_classes_known), f.readlines())))
 
 
         print("Source: ",self.args.source," Target: ",self.args.target)
