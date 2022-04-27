@@ -9,8 +9,6 @@ from resnet import resnet18_feat_extractor, Classifier
 from step1_KnownUnknownSep import step1
 from step2_SourceTargetAdapt import step2
 from eval_target import evaluation
-import numpy as npy
-import matplotlib.pyplot as plt
 
 from torch.utils.data.sampler import SubsetRandomSampler
 
@@ -164,9 +162,13 @@ class Trainer:
 
         self.source_path_file = 'txt_list/'+args.source+'_known.txt'
         self.target_path_file = 'txt_list/' + args.target + '.txt'
+    
+        target_list = os.listdir(self.target_path_file)
+        target_list_known_size = len(filter(lambda path: int(path.split()[1]) < int(self.args.n_classes_known), target_list))
+
 
         print("Source: ",self.args.source," Target: ",self.args.target)
-
+        print(f"Number of known samples in target set: {target_list_known_size}")
 
     def do_training(self, self_sup_cls):
 
