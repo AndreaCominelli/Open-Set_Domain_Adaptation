@@ -205,19 +205,6 @@ class Trainer:
         print('Target - Evaluation -- for known/unknown separation')
         rand = evaluation(self.args, self.feature_extractor, self.current_sup_cls[1], self.target_loader_eval, self.device)
 
-        # new dataloaders
-        # source_path_file -> contains the names of source and target images selected as unknown
-        # In this way i can train a model which is capable of recognising what are the known categories
-        # and the unknown ones
-        source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'
-        self.source_loader = data_helper.get_train_dataloader(self.args,source_path_file, self.cls_dict[self_sup_cls][0])
-
-        # target_path_file -> contains the names of target images which are considered as known
-        target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
-        self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
-        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.cls_dict[self_sup_cls][0])
-
-        print('Step 2 --------------------------------------------')
         self.current_sup_cls_step2 = ()
         
         if self_sup_cls in ["rot_cls", "rot_MH_cls"]:
@@ -226,7 +213,21 @@ class Trainer:
             self.current_sup_cls_step2 = self.cls_dict_step["flip_cls"]
         elif self_sup_cls in ["jigsaw_cls", "jigsaw_MH_cls"]:
             self.current_sup_cls_step2 = self.cls_dict_step["jigsaw_cls"]
-        
+
+        # new dataloaders
+        # source_path_file -> contains the names of source and target images selected as unknown
+        # In this way i can train a model which is capable of recognising what are the known categories
+        # and the unknown ones        
+        source_path_file = 'new_txt_list/' + self.args.source + '_known_'+str(rand)+'.txt'
+        self.source_loader = data_helper.get_train_dataloader(self.args,source_path_file, self.current_sup_cls_step2[0])
+
+
+        # target_path_file -> contains the names of target images which are considered as known
+        target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
+        self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file, self.current_sup_cls_step2[0])
+        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.current_sup_cls_step2[0])
+
+        print('Step 2 --------------------------------------------')    
         step2(self.args, self.feature_extractor, self.obj_cls, self.current_sup_cls_step2[1], self.source_loader, self.target_loader_train, self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.device)
             
         

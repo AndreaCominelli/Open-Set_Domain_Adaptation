@@ -1,0 +1,4 @@
+ROTATION
+
+AUROC ---- WEIGHT
+0.4829 --- 0.1
