@@ -49,9 +49,9 @@ def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, multi_h
             running_self_corrects += torch.sum(self_preds == self_lbls.data)
         else:
             self_loss = 0
-            for class_l in lbls:
-                self_predictions = self_cls[class_l](torch.cat((self_out, imgs_out), dim=0))
-                self_loss += criterion(self_predictions, self_lbls)
+            for index,class_l in enumerate(lbls.int()):
+                self_predictions = torch.reshape(self_cls[class_l](torch.cat((self_out, imgs_out), dim=0)),(1,4))
+                self_loss += criterion(self_predictions, torch.reshape(self_lbls,(-1,)))
                 _, self_preds = torch.max(self_predictions, 1)
                 running_self_corrects += torch.sum(self_preds == self_lbls)
 
