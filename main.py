@@ -169,17 +169,17 @@ class Trainer:
 
     def do_training(self, self_sup_cls):
 
-        self.source_loader = data_helper.get_train_dataloader(self.args,self.source_path_file, self.cls_dict[self_sup_cls][0])
-        self.target_loader_train = data_helper.get_val_dataloader(self.args,self.target_path_file, self.cls_dict[self_sup_cls][0])
-        self.target_loader_eval = data_helper.get_val_dataloader(self.args,self.target_path_file, self.cls_dict[self_sup_cls][0])
-        print("Dataset size: source %d, target %d" % (len(self.source_loader.dataset), len(self.target_loader_train.dataset)))
-
         self.current_sup_cls = ()
         
         if self_sup_cls in ["rot_cls", "flip_cls", "jigsaw_cls"]:
             self.current_sup_cls = self.cls_dict_step[self_sup_cls]
         elif self_sup_cls in ["rot_MH_cls", "flip_MH_cls", "jigsaw_MH_cls"]:
             self.current_sup_cls = self.cls_dict_mh[self_sup_cls]
+
+        self.source_loader = data_helper.get_train_dataloader(self.args,self.source_path_file, self.current_sup_cls[0])
+        self.target_loader_train = data_helper.get_val_dataloader(self.args,self.target_path_file, self.current_sup_cls[0])
+        self.target_loader_eval = data_helper.get_val_dataloader(self.args,self.target_path_file, self.current_sup_cls[0])
+        print("Dataset size: source %d, target %d" % (len(self.source_loader.dataset), len(self.target_loader_train.dataset)))
  
         # just check if final training parameters are saved somewhere. If so, not train again unless train_dont_save is true
     
