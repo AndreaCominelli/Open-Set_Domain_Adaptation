@@ -6,7 +6,7 @@ from tqdm import tqdm
 #### Implement Step1
 
 # multi-head = 1 if there is only one head otherwise it will represent the number of clasess (and of heads, one per class)
-def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, multi_head, source_loader, weight, optimizer,device,criterion):
+def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, source_loader, weight, optimizer,device,criterion):
     
     feature_extractor.train()
     obj_cls.train()
