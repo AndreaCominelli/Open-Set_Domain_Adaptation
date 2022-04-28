@@ -2,3 +2,8 @@ ROTATION
 
 AUROC ---- WEIGHT
 0.4829 --- 0.1
+0.5105 --- 1 -> migliore. Prova a ingrandire un pò lr e a diminuire il numero di epoche
+0.5053 --- 2
+0.5092 --- 4
+0.5084 --- 8
+0.5051 --- 16

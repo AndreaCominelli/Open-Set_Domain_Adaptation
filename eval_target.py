@@ -36,13 +36,13 @@ def evaluation(args, feature_extractor, self_cls, target_loader_eval, device):
 
             """if multi_head == 1:"""
             img_out = feature_extractor(img)
-            img_prediction = softmax(self_cls[0](torch.cat((img_out, img_out), dim=1)))
+            img_prediction = self_cls[0](torch.cat((img_out, img_out), dim=1))
             normality_score_list.append(torch.max(img_prediction, 1)[0].item())
 
             for i in img_self_sup: # img_self_sup contiene tutte le rotazioni dell'immagine img
                 im = i.to(device)
                 self_out = feature_extractor(im)
-                self_prediction = softmax(self_cls[0](torch.cat((self_out, img_out), dim=1)))
+                self_prediction = self_cls[0](torch.cat((self_out, img_out), dim=1))
                 normality_score_list.append(torch.max(self_prediction, 1)[0].item())
 
             normality_score = np.mean(normality_score_list)

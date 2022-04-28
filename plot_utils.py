@@ -39,4 +39,4 @@ def plot_acc(model="obj", sup_task="", dir="./stats"):
         plt.show()
 
 if __name__ == "__main__":
-    plot_acc(model="hos", sup_task="Rot", dir="./stats")
+    plot_acc(model="self", dir="./stats")
