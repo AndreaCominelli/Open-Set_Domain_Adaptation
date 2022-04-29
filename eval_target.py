@@ -1,4 +1,3 @@
-from matplotlib import image
 import torch
 import numpy as np
 from sklearn.metrics import roc_auc_score
@@ -10,8 +9,7 @@ from torch import nn
 def evaluation(args, feature_extractor, self_cls, target_loader_eval, device):
 
     feature_extractor.eval()
-    for self_cls_i in self_cls:
-        self_cls_i.eval()
+    self_cls[0].eval()
     
     softmax = nn.Softmax(dim=1)
 
@@ -31,10 +29,6 @@ def evaluation(args, feature_extractor, self_cls, target_loader_eval, device):
 
             normality_score_list = []
 
-            # se multi_head == 1 -> prima predico la rotazione dell'immagine non ruotata
-            # poi di tutte le sue rotazioni (sempre concatenando con l'immagine originale)
-
-            """if multi_head == 1:"""
             img_out = feature_extractor(img)
             img_prediction = softmax(self_cls[0](torch.cat((img_out, img_out), dim=1)))
             normality_score_list.append(torch.max(img_prediction, 1)[0].item())
@@ -47,21 +41,6 @@ def evaluation(args, feature_extractor, self_cls, target_loader_eval, device):
 
             normality_score = np.mean(normality_score_list)
             
-            """else:
-                normality_score = 0
-                for i in range(n_classes_known):
-                    img_out = feature_extractor(img)
-                    img_prediction = softmax(self_cls[i](torch.cat((img_out, img_out), dim=1)))
-                    normality_score_list.append(torch.max(img_prediction, 1)[0].item())
-                    for im in img_self_sup:
-                        im = im.to(device)
-                        self_out = feature_extractor(im)
-                        self_prediction = softmax(self_cls[i](torch.cat((self_out, img_out), dim=1)))
-                        normality_score_list.append(torch.max(self_prediction, 1)[0].item())
-                    act_norm_score = np.mean(normality_score_list)
-                    if normality_score < act_norm_score:
-                        normality_score = act_norm_score"""
-
             normality_scores.append(normality_score)
             # set the threshold as the mean of the normality scores
             # threshold = np.mean(np.array(normality_scores))

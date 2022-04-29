@@ -184,18 +184,3 @@ class TestDataset(data.Dataset):
 
     def __len__(self):
         return len(self.names)
-
-"""if __name__ == "__main__":
-    
-    img_tr = [transforms.RandomResizedCrop((int(222), int(222)), (0.8, 1)),
-        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=min(0.5, 0.4)),
-        transforms.RandomGrayscale(0.3), transforms.GaussianBlur(kernel_size=35, sigma=1.5)]
-
-    img_transforms = transforms.Compose(img_tr)
-    
-    names, labels = _dataset_info('txt_list/Art.txt')
-    img = Image.open("./data/" + names[0])
-    img = img_transforms(img)
-
-    plt.imshow(img)
-    plt.show()"""

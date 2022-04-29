@@ -10,8 +10,7 @@ def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, source_
     
     feature_extractor.train()
     obj_cls.train()
-    for self_cls_i in self_cls:
-        self_cls_i.train()
+    self_cls[0].train()
     
     running_img_corrects = 0
     running_self_corrects = 0
@@ -48,14 +47,6 @@ def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, source_
         self_loss = criterion(self_predictions, self_lbls)
         _, self_preds = torch.max(self_predictions, 1)
         running_self_corrects += torch.sum(self_preds == self_lbls.data)
-        
-        """else:
-            self_loss = 0
-            for index,class_l in enumerate(lbls.int()):
-                self_predictions = torch.reshape(self_cls[class_l](torch.cat((self_out[index], imgs_out[index]), dim=0)),(1,4))
-                self_loss += criterion(self_predictions, torch.reshape(self_lbls[index],(-1,)))
-                _, self_preds = torch.max(self_predictions, 1)
-                running_self_corrects += torch.sum(self_preds == self_lbls[index])"""
 
         # loss
         loss = img_loss + weight*self_loss

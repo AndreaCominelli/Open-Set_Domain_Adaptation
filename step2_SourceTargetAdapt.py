@@ -15,8 +15,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
 
     criterion = nn.CrossEntropyLoss()
     feature_extractor.train()
-    for self_cls_i in self_cls:
-        self_cls_i.train()
+    self_cls[0].train()
     
     total_source_loader_num = len(source_loader.dataset)
     target_loader_train = cycle(target_loader_train)
@@ -48,21 +47,12 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
         _, cls_pred_source = torch.max(prediction_source, 1)
 
         # training the rotation classifiers, similar to step1
-        """if multi_head == 1:"""
-            # prediction on target set of the rotated image (in case of rotation)
+        # prediction on target set of the rotated image (in case of rotation)
         self_prediction_target = self_cls[0](torch.cat((feature_target_self, feature_target), dim=1))
         self_loss = criterion(self_prediction_target, self_l_target)
         _, self_preds = torch.max(self_prediction_target, 1)
         self_corrects += torch.sum(self_preds == self_l_target.data)
         
-        """else:
-            self_loss = 0
-            for index,class_l in enumerate(class_l_source.int()):
-                self_predictions = torch.reshape(self_cls[class_l](torch.cat((feature_target_self[index], feature_target[index]), dim=0)),(1,4))
-                self_loss += criterion(self_predictions, torch.reshape(self_l_target[index],(-1,)))
-                _, self_preds = torch.max(self_predictions, 1)
-                self_corrects += torch.sum(self_preds == self_l_target[index])"""
-
         # calculate losses
         class_loss = criterion(prediction_source,class_l_source)
         loss = class_loss + weight*self_loss
