@@ -20,6 +20,15 @@ AUROC ---- WEIGHT
 
 JIGSAW
 
+AUROC ---- WEIGHT
+0.5045 --- 0.1
+0.4727 --- 1
+0.4888 --- 2
+0.4983 --- 4
+0.5084 --- 8
+0.5023 --- 16
+
 sembrerebbe che le prestazioni migliori le dia il weight che fa raggiungere al
 self-supervised task circa l' 80% di accuratezza. Di più, o di meno, risulta in AUROC più basso
 Provare su rotation classifier weight = 1 con 45 epoche
+Scen
