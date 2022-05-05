@@ -99,4 +99,4 @@ def step1(args, feature_extractor,obj_cls, self_sup_type, self_cls, source_loade
     obj_stats.write(statistics)
     obj_stats.close()
     
-    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls[0]
+    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls[0].state_dict()
