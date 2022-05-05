@@ -178,7 +178,7 @@ class Trainer:
         if self.args.save_model:
             self.feature_extractor.load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt"), strict=False)
             self.obj_cls.load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt"), strict=False)
-            self.current_sup_cls.load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/self_{self_sup_cls}_cls_params.pt"), strict=False)
+            self.current_sup_cls[1].load_state_dict(torch.load(f"./models/{self.args.source}/{self.args.self_sup_task}/self_{self_sup_cls}_cls_params.pt"), strict=False)
         
         print('Target - Evaluation -- for known/unknown separation')
         rand = evaluation(self.args, self.feature_extractor, self.current_sup_cls[1], self.target_loader_eval, self.device)
