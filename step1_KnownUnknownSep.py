@@ -98,9 +98,5 @@ def step1(args, feature_extractor,obj_cls, self_sup_type, self_cls, source_loade
     statistics += str(weight) + "\n"
     obj_stats.write(statistics)
     obj_stats.close()
-
-    self_cls_model = []
-    for i in self_cls:
-        self_cls_model.append(i.state_dict())
     
-    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls_model
+    return feature_extractor.state_dict(), obj_cls.state_dict(), self_cls[0]
