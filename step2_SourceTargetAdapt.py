@@ -115,7 +115,7 @@ def step2(args,feature_extractor, obj_cls, self_cls, source_loader,target_loader
 
     for epoch in range(n_epochs):
         print('Epoch: ',epoch)
-        os_star, unk, hos = _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_train,target_loader_eval,weight,optimizer, args.n_class_known, args.n_class_tot, device)
+        os_star, unk, hos = _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_train,target_loader_eval,weight,optimizer, args.n_classes_known, args.n_classes_tot, device)
         
         hos_values[epoch] = hos
     
