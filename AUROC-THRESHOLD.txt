@@ -61,7 +61,4 @@ N_CLASSES ---- THRESHOLD
 3240 --------- 0.8 -> migliore
 1007  --------- 0.9
 
-STEP 2
-
-ROTATION
-
+Vedere in cartella models > Art le statistiche dei 3 self-supervised classifiers per lo step 2
