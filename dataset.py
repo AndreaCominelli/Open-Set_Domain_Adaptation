@@ -133,6 +133,7 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
+        img = ''
         if os.path.isfile(self.data_path +"/"+ img_name):    
             img = Image.open(self.data_path +"/"+ img_name)
         
@@ -168,6 +169,7 @@ class TestDataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
+        img = ''
         if os.path.isfile(self.data_path +"/"+ img_name):
             img = Image.open(self.data_path +"/"+ img_name)
         
