@@ -21,7 +21,7 @@ def evaluation(args, feature_extractor, self_cls, target_loader_eval, device):
     with torch.no_grad():
         # (img ,class_l, img_self_sup, img_path)
         for _, data in tqdm(enumerate(target_loader_eval)):
-            if not data is None:
+            if data != 0:
                 (img ,class_l, img_self_sup, img_path) = data
                 img, class_l = img.to(device), class_l.to(device)
                 

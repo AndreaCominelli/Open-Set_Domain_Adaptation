@@ -151,7 +151,7 @@ class Dataset(data.Dataset):
             
             return img, int(self.labels[index]), img_self_sup, index_self_sup
         except:
-            return None
+            return 0
 
     def __len__(self):
         return len(self.names)
@@ -189,7 +189,7 @@ class TestDataset(data.Dataset):
 
             return img, int(self.labels[index]), imgs_self_sup, img_name
         except:
-            return None
+            return 0
 
     def __len__(self):
         return len(self.names)
