@@ -1,4 +1,5 @@
 #from data_helper import get_train_transformers
+from tkinter import image_names
 import torch.utils.data as data
 from PIL import Image
 from itertools import permutations
@@ -133,23 +134,24 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        img = ''
-        if os.path.isfile(self.data_path +"/"+ img_name):    
+        try:  
             img = Image.open(self.data_path +"/"+ img_name)
-        
-        if self._image_transformer:
-            img = self._image_transformer(img)
+            
+            if self._image_transformer:
+                img = self._image_transformer(img)
 
-        if self.self_sup_cls == "rotation":
-            img_self_sup, index_self_sup = choose_random_rotation(img)
-        elif self.self_sup_cls == "flip":
-            img_self_sup, index_self_sup = random_flip(img)
-        elif self.self_sup_cls == "jigsaw":
-            img_self_sup, index_self_sup = random_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
-        else:
-            img_self_sup, index_self_sup = img, int(self.labels[index])
-        
-        return img, int(self.labels[index]), img_self_sup, index_self_sup
+            if self.self_sup_cls == "rotation":
+                img_self_sup, index_self_sup = choose_random_rotation(img)
+            elif self.self_sup_cls == "flip":
+                img_self_sup, index_self_sup = random_flip(img)
+            elif self.self_sup_cls == "jigsaw":
+                img_self_sup, index_self_sup = random_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
+            else:
+                img_self_sup, index_self_sup = img, int(self.labels[index])
+            
+            return img, int(self.labels[index]), img_self_sup, index_self_sup
+        except:
+            print(f"Image {img_name} not found")
 
     def __len__(self):
         return len(self.names)
@@ -169,23 +171,24 @@ class TestDataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        img = ''
-        if os.path.isfile(self.data_path +"/"+ img_name):
+        try:
             img = Image.open(self.data_path +"/"+ img_name)
-        
-        if self._image_transformer:
-            img = self._image_transformer(img)
+            
+            if self._image_transformer:
+                img = self._image_transformer(img)
 
-        if self.self_sup_cls == "rotation":
-            imgs_self_sup = all_rotations(img)
-        elif self.self_sup_cls == "flip":
-            imgs_self_sup = flip_img(img)
-        elif self.self_sup_cls == "jigsaw":
-            imgs_self_sup = all_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
-        else:
-            imgs_self_sup = [img]
+            if self.self_sup_cls == "rotation":
+                imgs_self_sup = all_rotations(img)
+            elif self.self_sup_cls == "flip":
+                imgs_self_sup = flip_img(img)
+            elif self.self_sup_cls == "jigsaw":
+                imgs_self_sup = all_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
+            else:
+                imgs_self_sup = [img]
 
-        return img, int(self.labels[index]), imgs_self_sup, img_name
+            return img, int(self.labels[index]), imgs_self_sup, img_name
+        except:
+            print(f"Image {img_name} not found")
 
     def __len__(self):
         return len(self.names)
