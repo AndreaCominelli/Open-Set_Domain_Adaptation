@@ -1,5 +1,4 @@
 #from data_helper import get_train_transformers
-from tkinter import image_names
 import torch.utils.data as data
 from PIL import Image
 from itertools import permutations
@@ -134,7 +133,8 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        try:  
+        img = None
+        try:
             img = Image.open(self.data_path +"/"+ img_name)
             
             if self._image_transformer:
@@ -151,7 +151,7 @@ class Dataset(data.Dataset):
             
             return img, int(self.labels[index]), img_self_sup, index_self_sup
         except:
-            print(f"Image {img_name} not found")
+            return None
 
     def __len__(self):
         return len(self.names)
@@ -171,6 +171,7 @@ class TestDataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
+        img = None
         try:
             img = Image.open(self.data_path +"/"+ img_name)
             
@@ -188,7 +189,7 @@ class TestDataset(data.Dataset):
 
             return img, int(self.labels[index]), imgs_self_sup, img_name
         except:
-            print(f"Image {img_name} not found")
+            return None
 
     def __len__(self):
         return len(self.names)
