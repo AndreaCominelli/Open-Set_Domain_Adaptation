@@ -9,6 +9,7 @@ import numpy as npy
 from torchvision import transforms
 import torch
 from sklearn.metrics import DistanceMetric
+import os
 
 def get_permutations(jigsaw_dim, n_perm):
     size = int(jigsaw_dim[0]*jigsaw_dim[1])
@@ -132,7 +133,8 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        img = Image.open(self.data_path +"/"+ img_name)
+        if os.path.isfile(self.data_path +"/"+ img_name):    
+            img = Image.open(self.data_path +"/"+ img_name)
         
         if self._image_transformer:
             img = self._image_transformer(img)
@@ -166,7 +168,8 @@ class TestDataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        img = Image.open(self.data_path +"/"+ img_name)
+        if os.path.isfile(self.data_path +"/"+ img_name):
+            img = Image.open(self.data_path +"/"+ img_name)
         
         if self._image_transformer:
             img = self._image_transformer(img)

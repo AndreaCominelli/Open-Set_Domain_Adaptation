@@ -1,6 +1,6 @@
-Rot - (Art -- Clipart) - (OS: 0.5094, UNK: 0.7872, HOS: 0.6185)
-Rot - (Art -- Clipart) - (OS: 0.5127, UNK: 0.7679, HOS: 0.6149)
-Rot - (Art -- Clipart) - (OS: 0.5183, UNK: 0.7786, HOS: 0.6223)
-Rot - (Art -- Clipart) - (OS: 0.5089, UNK: 0.7679, HOS: 0.6122)
-Rot - (Art -- Clipart) - (OS: 0.4859, UNK: 0.8064, HOS: 0.6064)
-Rot - (Art -- Clipart) - (OS: 0.3681, UNK: 0.7786, HOS: 0.4999)
+Rot - (Art -- Clipart) - (OS: 0.5094, UNK: 0.7872, HOS: 0.6185) - 0.1
+Rot - (Art -- Clipart) - (OS: 0.5127, UNK: 0.7679, HOS: 0.6149) - 1
+Rot - (Art -- Clipart) - (OS: 0.5183, UNK: 0.7786, HOS: 0.6223) - 2
+Rot - (Art -- Clipart) - (OS: 0.5089, UNK: 0.7679, HOS: 0.6122) - 4
+Rot - (Art -- Clipart) - (OS: 0.4859, UNK: 0.8064, HOS: 0.6064) - 8
+Rot - (Art -- Clipart) - (OS: 0.3681, UNK: 0.7786, HOS: 0.4999) - 16
