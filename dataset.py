@@ -132,8 +132,10 @@ class Dataset(data.Dataset):
 
         #clean data 
         for name in self.names:
-            if not os.path.isfile(self.data_path + "/" + name)
-                self.names.remove(name)
+            if not os.path.isfile(self.data_path + "/" + name):
+                index = self.names.index(name)
+                self.names.pop(index)
+                self.labels.pop(index)
 
     def __getitem__(self, index):
 
@@ -170,9 +172,11 @@ class TestDataset(data.Dataset):
 
         #clean data 
         for name in self.names:
-            if not os.path.isfile(self.data_path + "/" + name)
-                self.names.remove(name)
-                
+            if not os.path.isfile(self.data_path + "/" + name):
+                index = self.names.index(name)
+                self.names.pop(index)
+                self.labels.pop(index)
+
     def __getitem__(self, index):
 
         img_name = self.names[index]
