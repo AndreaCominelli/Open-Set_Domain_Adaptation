@@ -22,7 +22,6 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
 
     img_corrects = 0
     self_corrects = 0
-    class_loss = 0
 
     for _, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
 
@@ -67,8 +66,8 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
         img_corrects += torch.sum(cls_pred_source == class_l_source)
         
 
-    acc_cls = (img_corrects / total_source_loader_num ) * 100
-    acc_rot = (self_corrects / total_source_loader_num) * 100
+    acc_cls = (img_corrects.double() / total_source_loader_num ) * 100
+    acc_rot = (self_corrects.double() / total_source_loader_num) * 100
 
     print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(), acc_cls, self_loss.item(), acc_rot))
 
