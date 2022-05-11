@@ -28,8 +28,8 @@ AUROC ---- WEIGHT
 0.5084 --- 8 -> migliore -> tra 0.49 e 0.51 con 40 epoche
 0.5023 --- 16
 
-Perché diminuisco il numero di epoche? perché a giudicare dai grafici dell'accuratezza del self-sup classifier, l'accuratezza non si incremente più di tanto dopo un tot di epoche.
-Sacrifico l'1% o al massimo il 2% di AUROC ma finisco nella metà del tempo
+Why am I decreasing the number of epochs? because judging from the graphs of the accuracy of the self-sup classifier, the accuracy does not increase that much after a certain number of epochs.I sacrifice 1% or at most 2% of AUROC but I finish in half the time 
+
 
 ROTATION - w1 = 1, epochs = 50
 
@@ -61,4 +61,4 @@ N_CLASSES ---- THRESHOLD
 3240 --------- 0.8 -> migliore
 1007  --------- 0.9
 
-Vedere in cartella models > Art le statistiche dei 3 self-supervised classifiers per lo step 2
+Look in folder models > Art the stats for the 3 self-supervised tasks on step 2
