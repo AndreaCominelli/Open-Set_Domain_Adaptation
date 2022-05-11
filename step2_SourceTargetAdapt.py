@@ -22,7 +22,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
 
     img_corrects = 0
     self_corrects = 0
-
+    
     for _, (data_source, class_l_source, _, _) in tqdm(enumerate(source_loader)):
 
         ### CHECK!!!!
