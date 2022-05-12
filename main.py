@@ -128,28 +128,36 @@ class Trainer:
             rot_cls = args.weight_RotTask_step1,
             rot_MH_cls = args.weight_RotTask_MH_step1,
             flip_cls = args.weight_FlipTask_step1,
-            jigsaw_cls = args.weight_JigsawTask_step1
+            flip_MH_cls = args.weight_FlipTask_MH_step1,
+            jigsaw_cls = args.weight_JigsawTask_step1,
+            jigsaw_MH_cls = args.weight_JigsawTask_MH_step1
         )
 
         self.step1_epochs = dict(
             rot_cls = args.epochs_rot_step1,
             rot_MH_cls = args.epochs_rot_MH_step1,
             flip_cls = args.epochs_flip_step1,
-            jigsaw_cls = args.epochs_jigsaw_step1
+            flip_MH_cls = args.epochs_flip_MH_step1,
+            jigsaw_cls = args.epochs_jigsaw_step1,
+            jigsaw_MH_cls = args.epochs_jigsaw_MH_step1
         )
 
         self.step2_weights = dict(
             rot_cls = args.weight_RotTask_step2,
             rot_MH_cls = args.weight_RotTask_MH_step2,
             flip_cls = args.weight_FlipTask_step2,
-            jigsaw_cls = args.weight_JigsawTask_step2
+            flip_MH_cls = args.weight_FlipTask_MH_step2,
+            jigsaw_cls = args.weight_JigsawTask_step2,
+            jigsaw_MH_cls = args.weight_JigsawTask_MH_step2
         )
 
         self.step2_epochs = dict(
             rot_cls = args.epochs_rot_step2,
             rot_MH_cls = args.epochs_rot_MH_step2,
             flip_cls = args.epochs_flip_step2,
-            jigsaw_cls = args.epochs_jigsaw_step2
+            flip_MH_cls = args.epochs_flip_MH_step2,
+            jigsaw_cls = args.epochs_jigsaw_step2,
+            jigsaw_MH_cls = args.epochs_jigsaw_MH_step2
         )
 
         self.source_path_file = 'txt_list/'+args.source+'_known.txt'
