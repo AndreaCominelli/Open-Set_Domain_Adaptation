@@ -38,7 +38,6 @@ def _do_epoch(args, feature_extractor, obj_cls, self_sup_type, self_cls, source_
         self_predictions = self_cls[0](torch.cat((self_out, imgs_out), dim=1))
         # try to implement multi-rotation classifier
         if self_sup_type == "rotation_mh":
-            print(f"LABEL: {lbls}\n SELF_LABELS: {self_lbls}")
             self_lbls = (lbls * 4) + self_lbls
         elif self_sup_type == "flip_mh":
             self_lbls = (lbls * 2) + self_lbls
