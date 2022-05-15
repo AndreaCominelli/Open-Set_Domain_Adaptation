@@ -86,11 +86,10 @@ class Trainer:
         self.args = args
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        #self.device = torch.device("cpu")
         
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor().to(self.device)
-        self.obj_cls = Classifier(512,self.args.n_classes_known+1).to(self.device)
+        self.obj_cls = Classifier(512,self.args.n_classes_known + 1).to(self.device)
 
         self.cls_dict = dict(
             rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
