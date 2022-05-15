@@ -145,11 +145,11 @@ class Dataset(data.Dataset):
         if self._image_transformer:
             img = self._image_transformer(img)
 
-        if self.self_sup_cls == "rotation":
+        if self.self_sup_cls == "rotation" or self.self_sup_cls == "rotation_mh":
             img_self_sup, index_self_sup = choose_random_rotation(img)
-        elif self.self_sup_cls == "flip":
+        elif self.self_sup_cls == "flip" or self.self_sup_cls == "flip_mh":
             img_self_sup, index_self_sup = random_flip(img)
-        elif self.self_sup_cls == "jigsaw":
+        elif self.self_sup_cls == "jigsaw" or self.self_sup_cls == "jigsaw_mh":
             img_self_sup, index_self_sup = random_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
         else:
             img_self_sup, index_self_sup = img, int(self.labels[index])
@@ -185,11 +185,11 @@ class TestDataset(data.Dataset):
         if self._image_transformer:
             img = self._image_transformer(img)
 
-        if self.self_sup_cls == "rotation":
+        if self.self_sup_cls == "rotation" or self.self_sup_cls == "rotation_mh":
             imgs_self_sup = all_rotations(img)
-        elif self.self_sup_cls == "flip":
+        elif self.self_sup_cls == "flip" or self.self_sup_cls == "flip_mh":
             imgs_self_sup = flip_img(img)
-        elif self.self_sup_cls == "jigsaw":
+        elif self.self_sup_cls == "jigsaw" or self.self_sup_cls == "jigsaw_mh":
             imgs_self_sup = all_jigsaw(img, self.img_size, self.jigsaw_dim, self.perm_list)
         else:
             imgs_self_sup = [img]
