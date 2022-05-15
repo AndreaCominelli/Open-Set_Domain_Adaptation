@@ -10,27 +10,6 @@ from step1_KnownUnknownSep import step1
 from step2_SourceTargetAdapt import step2
 from eval_target import evaluation
 
-from torch.utils.data.sampler import SubsetRandomSampler
-
-"""
-1) Find best model with learning rate and weight decay random values
-(we must first search the model who better learn)
-2) Once it has been found, look at the AUROC.
-3) Improve the AUROC score by tuning the model on the loss's weight and threshold
-4) Look at the final result at step 2 (HOS) using the model tuned at 3)
-5) Repeat the process with different self-supervised strategies
-6) Check if other strategies improved the final results
-"""
-
-"""
-In order to get a good AUROC, we need a good discriminative model, based on
-the capability to recognize in the target set the rotation applied to images.
-If we overfit on the source set, we might end-up in a situation in which the model does not recognize
-rotation (thus the shape) of target images belonging to a different distribution
-Try to augment transformation in data augmentation which improve the difficulty in recognize the shape
-(such as image distortion)
-"""
-
 def get_args():
     parser = argparse.ArgumentParser(description="Script to launch training",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -115,11 +94,11 @@ class Trainer:
 
         self.cls_dict = dict(
             rot_cls = ("rotation", [Classifier(512*2,4).to(self.device)]),
-            rot_MH_cls = ("rotation_mh", [Classifier(512*2, (self.args.n_classes_known * 4)).to(self.device)]),
+            rot_MH_cls = ("rotation_mh", [Classifier(512*2, (self.args.n_classes_known * 4) + 3).to(self.device)]),
             flip_cls = ("flip", [Classifier(512*2,2).to(self.device)]),
-            flip_MH_cls = ("flip_mh", [Classifier(512*2, (self.args.n_classes_known * 2)).to(self.device)]),
+            flip_MH_cls = ("flip_mh", [Classifier(512*2, (self.args.n_classes_known * 2) + 1).to(self.device)]),
             jigsaw_cls = ("jigsaw", [Classifier(512*2,args.jigsaw_permutations).to(self.device)]),
-            jigsaw_MH_cls = ("jigsaw_mh", [Classifier(512*2, (self.args.n_classes_known * self.args.jigsaw_permutations)).to(self.device)])
+            jigsaw_MH_cls = ("jigsaw_mh", [Classifier(512*2, (self.args.n_classes_known * self.args.jigsaw_permutations) + self.args.jigsaw_permutations - 1).to(self.device)])
         )
         
         ###DO ANOTHER DICT IF WE NEED DIFFERENT LEARNING RATES PER TASK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
