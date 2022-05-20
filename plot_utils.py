@@ -13,11 +13,11 @@ def truncate(number, digits=3):
 def plot_acc(model="obj", sup_task="", dir="./stats"):
     sb.set_style("darkgrid")
     if model == "obj":
-        path = os.path.join(dir, "obj_stats.txt")
+        path = os.path.join(dir, f"obj_stats_{sup_task}.txt")
     elif model == "hos":
         path = os.path.join(dir, f"hos_stats_{sup_task}.txt")
     else:
-        path = os.path.join(dir, "self_stats.txt")
+        path = os.path.join(dir, f"self_stats_{sup_task}.txt")
     print(path)
     with open(path, "r") as f:
         lines = f.readlines()
@@ -39,4 +39,4 @@ def plot_acc(model="obj", sup_task="", dir="./stats"):
         plt.show()
 
 if __name__ == "__main__":
-    plot_acc(model="self", dir="./stats")
+    plot_acc(model="self", sup_task="jigmh", dir="./stats")
