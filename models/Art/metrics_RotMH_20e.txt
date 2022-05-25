@@ -1,0 +1,6 @@
+RotMH - (Art -- Clipart) - (OS: 0.5134, UNK: 0.7735, HOS: 0.6171)
+RotMH - (Art -- Clipart) - (OS: 0.4985, UNK: 0.7466, HOS: 0.5978)
+RotMH - (Art -- Clipart) - (OS: 0.4932, UNK: 0.7319, HOS: 0.5893)
+RotMH - (Art -- Clipart) - (OS: 0.0438, UNK: 0.9021, HOS: 0.0835)
+RotMH - (Art -- Clipart) - (OS: 0.0004, UNK: 0.9987, HOS: 0.0009)
+RotMH - (Art -- Clipart) - (OS: 0.0, UNK: 1.0, HOS: 0.0)
