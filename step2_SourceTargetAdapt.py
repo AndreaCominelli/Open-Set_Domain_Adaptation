@@ -28,6 +28,7 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
         ### CHECK!!!!
         # if args.batch_size > target_loader_train batch size, raise an exception
         # it cannot iterate over the target_loader_train batch size
+        # just one transformation at a time
         (data_target, _ , self_data_target, self_l_target) = next(target_loader_train)
 
         data_source, class_l_source  = data_source.to(device), class_l_source.to(device)
