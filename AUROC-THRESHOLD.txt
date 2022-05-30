@@ -34,15 +34,17 @@ Why am I decreasing the number of epochs? because judging from the graphs of the
 ROTATION - w1 = 1, epochs = 50
 
 N_CLASSES ---- THRESHOLD
+
 4365 --------- 0.1
 4365 --------- 0.3
 3065 --------- 0.5 -> migliore
 473  --------- 0.7
-4  	 --------- 0.9
+4    --------- 0.9
 
 FLIP - w1 = 0.1, epochs = 60
 
 N_CLASSES ---- THRESHOLD
+
 4365 --------- 0.1
 4365 --------- 0.3
 4365 --------- 0.5
@@ -54,11 +56,12 @@ N_CLASSES ---- THRESHOLD
 JIGSAW - w1 = 8, epochs = 40
 
 N_CLASSES ---- THRESHOLD
+
 4365 --------- 0.1
 4365 --------- 0.3
 4361 --------- 0.5
 4133 --------- 0.7
 3240 --------- 0.8 -> migliore
-1007  --------- 0.9
+1007 --------- 0.9
 
 Look in folder models > Art the stats for the 3 self-supervised tasks on step 2
