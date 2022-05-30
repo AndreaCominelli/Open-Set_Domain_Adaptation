@@ -162,6 +162,9 @@ class Trainer:
         if (not os.path.isfile(f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt") and not os.path.isfile(f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt")) or self.args.train_dont_save : # and not model_present:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.args, self.feature_extractor, self.obj_cls, self.current_sup_cls[0], self.current_sup_cls[1], self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.device)
+            
+            print(self.args)
+
             if self.args.save_model:
                 torch.save(fe_model, f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt")
                 torch.save(obj_model, f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt")
