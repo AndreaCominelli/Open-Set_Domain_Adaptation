@@ -149,7 +149,7 @@ class Trainer:
         print(f"Number of known samples in target set: {target_list_known_size}")
 
     def do_training(self, self_sup_cls):
-        
+        print(self.args)
         self.current_sup_cls = self.cls_dict[self_sup_cls]
 
         self.source_loader = data_helper.get_train_dataloader(self.args,self.source_path_file, self.current_sup_cls[0])
@@ -163,8 +163,6 @@ class Trainer:
             print('Step 1 --------------------------------------------')
             fe_model, obj_model, self_model = step1(self.args, self.feature_extractor, self.obj_cls, self.current_sup_cls[0], self.current_sup_cls[1], self.source_loader, self.step1_weights[self_sup_cls], self.step1_epochs[self_sup_cls], self.device)
             
-            print(self.args)
-
             if self.args.save_model:
                 torch.save(fe_model, f"./models/{self.args.source}/{self.args.self_sup_task}/feature_extractor_params.pt")
                 torch.save(obj_model, f"./models/{self.args.source}/{self.args.self_sup_task}/obj_cls_params.pt")
