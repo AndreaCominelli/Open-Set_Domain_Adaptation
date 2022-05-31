@@ -35,7 +35,7 @@ def get_args():
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
     parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate")
     parser.add_argument("--weight_decay", type=float, default=0.0005, help="Weight decay")
-    parser.add_argument("--enable_scheduler", type=bool, default=True, help="If true, the system will apply a learning rate decay policy every n epochs")
+    parser.add_argument("--enable_scheduler", type=bool, default=False, help="If true, the system will apply a learning rate decay policy every n epochs")
     
     parser.add_argument("--epochs_rot_step1", type=int, default=10, help="Number of epochs of step1 for known/unknown separation in rotation training")
     parser.add_argument("--epochs_rot_step2", type=int, default=10, help="Number of epochs of step2 for source-target adaptation in rotation training")
