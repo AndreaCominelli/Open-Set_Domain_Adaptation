@@ -169,7 +169,6 @@ class Trainer:
 
         print("Source: ",self.args.source," Target: ",self.args.target)
         print(f"Number of known samples in target set: {target_list_known_size}")
-        print(f"--- MULTI HEAD: {len(self.cls_dict[self_sup_cls][1])}")
 
     def do_training(self, self_sup_cls):
 
