@@ -200,7 +200,7 @@ class Trainer:
         self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file, self.current_sup_cls[0])
 
         print('Step 2 --------------------------------------------')    
-        step2(self.args, self.feature_extractor, self.obj_cls, self.cls_dict["rot_cls"][1], self.source_loader, self.target_loader_train, self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.device)
+        step2(self.args, self.feature_extractor, self.obj_cls, self.current_sup_cls[1], self.source_loader, self.target_loader_train, self.target_loader_eval, self.step2_weights[self_sup_cls], self.step2_epochs[self_sup_cls], self.device)
     
         
 def main():
