@@ -16,8 +16,6 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
     criterion = nn.CrossEntropyLoss()
     feature_extractor.train()
     self_cls[0].train()
-
-    softmax = nn.Softmax(dim=1)
     
     total_source_loader_num = len(source_loader.dataset)
     target_loader_train = cycle(target_loader_train)
@@ -46,12 +44,12 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
         feature_target_self = feature_extractor(self_data_target)
 
         # object prediction on the source image
-        prediction_source = softmax(obj_cls(feature_source))
+        prediction_source = obj_cls(feature_source)
         _, cls_pred_source = torch.max(prediction_source, 1)
 
         # training the rotation classifiers, similar to step1
         # prediction on target set of the rotated image (in case of rotation)
-        self_prediction_target = softmax(self_cls[0](torch.cat((feature_target_self, feature_target), dim=1)))
+        self_prediction_target = self_cls[0](torch.cat((feature_target_self, feature_target), dim=1))
         self_loss = criterion(self_prediction_target, self_l_target)
         _, self_preds = torch.max(self_prediction_target, 1)
         self_corrects += torch.sum(self_preds == self_l_target.data)
