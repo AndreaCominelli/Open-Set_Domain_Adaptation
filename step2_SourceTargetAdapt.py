@@ -56,7 +56,6 @@ def _do_epoch(feature_extractor, obj_cls, self_cls, source_loader,target_loader_
         
         # calculate losses
         class_loss = criterion(prediction_source,class_l_source)
-        print(f"CLASS LOSS ---> {class_loss.item()}")
         loss = class_loss + weight*self_loss
 
         # backward
