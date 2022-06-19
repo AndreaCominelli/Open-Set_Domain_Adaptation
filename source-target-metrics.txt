@@ -1,11 +1,15 @@
 Rot - (Art -- Clipart) - (OS: 0.5117, UNK: 0.7722, HOS: 0.6155)
 Rot - (Art -- Product) - (OS: 0.5517, UNK: 0.8242, HOS: 0.6609)
+Rot - (Art -- RealWorld) -  (OS: 0.6045, UNK: 0.8016, HOS: 0.689)
 
 Rot - (Clipart -- Art) - (OS: 0.3262, UNK: 0.8623, HOS: 0.4733)
 Rot - (Clipart -- Product) - (OS: 0.4319, UNK: 0.8286, HOS: 0.5678)
 Rot - (Clipart -- RealWorld) - (OS: 0.4286, UNK: 0.849, HOS: 0.5697)
 
 Rot - (Product -- Clipart) - (OS: 0.3667, UNK: 0.7016, HOS: 0.4817)
+Rot - (Product -- Art) - (OS: 0.4673, UNK: 0.7427, HOS: 0.573)
+Rot - (Product -- RealWorld) - (OS: 0.6039, UNK: 0.7767, HOS: 0.679)
 
 Rot - (RealWorld -- Clipart) - (OS: 0.455, UNK: 0.8067, HOS: 0.5819)
 Rot - (RealWorld -- Product) - (OS: 0.5459, UNK: 0.8202, HOS: 0.6555)
+Rot - (RealWorld -- Art) - (OS: 0.5378, UNK: 0.7601, HOS: 0.629)
